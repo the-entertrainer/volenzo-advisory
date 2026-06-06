@@ -3,243 +3,447 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Volenzo Advisory — India's only agency-side aviation consulting firm specializing in NDC, ADM recovery, and revenue optimization for TMCs.">
-    <meta name="theme-color" content="#FFFFFF">
-    <title>Volenzo Advisory — Revenue Recovery for Indian Travel Agencies</title>
+    <meta name="description" content="Volenzo Advisory — India's only agency-side aviation advisor. Recover NDC losses, fight ADMs, and protect GDS income. Founded by IndiGo & Accelya alumni.">
+    <title>Volenzo Advisory — Stop the Revenue Leak</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js" defer></script>
+    <script src="script.js" defer></script>
 </head>
 <body>
 
-<!-- Navigation -->
+<!-- Fixed sky plane + contrail -->
+<canvas id="contrail-canvas" aria-hidden="true"></canvas>
+<div id="flight-wrapper" aria-hidden="true">
+    <img id="flight-plane" src="assets/plane.png" alt="">
+</div>
+
+<!-- Decorative clouds in hero sky -->
+<div class="sky-cloud sky-cloud--a" aria-hidden="true"></div>
+<div class="sky-cloud sky-cloud--b" aria-hidden="true"></div>
+<div class="sky-cloud sky-cloud--c" aria-hidden="true"></div>
+
+<!-- ═══════ NAVIGATION ═══════ -->
 <nav id="nav">
-    <a href="#" class="nav-logo">
-        <img src="assets/volenzologo.png" alt="Volenzo Advisory">
+    <a href="#" class="nav-logo-link">
+        <img src="assets/volenzologo.png" alt="Volenzo Advisory" class="nav-logo">
     </a>
-    <ul class="nav-menu">
-        <li><a href="#problem">The Problem</a></li>
-        <li><a href="#solution">The Solution</a></li>
+    <ul class="nav-links">
+        <li><a href="#pain">The Problem</a></li>
+        <li><a href="#why-us">Why Volenzo</a></li>
         <li><a href="#services">Services</a></li>
-        <li><a href="#contact">Contact</a></li>
     </ul>
-    <a href="#contact" class="nav-cta">Start Recovery</a>
+    <a href="#contact" class="nav-cta">Talk to an Advisor</a>
+    <button class="nav-burger" id="nav-burger" aria-label="Open menu">
+        <span></span><span></span>
+    </button>
 </nav>
 
-<!-- Hero Section -->
+<!-- Mobile overlay -->
+<div class="mob-overlay" id="mob-overlay" aria-hidden="true">
+    <button class="mob-close" id="mob-close" aria-label="Close">
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <line x1="4" y1="4" x2="18" y2="18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            <line x1="18" y1="4" x2="4" y2="18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+    </button>
+    <nav>
+        <a href="#pain">The Problem</a>
+        <a href="#why-us">Why Volenzo</a>
+        <a href="#services">Services</a>
+        <a href="#contact">Talk to an Advisor</a>
+    </nav>
+</div>
+
+<!-- ═══════ HERO ═══════ -->
 <section id="hero">
-    <div class="hero-container">
-        <div class="hero-content">
-            <div class="hero-badge">
-                <span class="badge-dot"></span>
-                <span>Advisory for Indian TMCs</span>
-            </div>
+    <div class="hero-inner">
+        <div class="hero-copy" id="hero-copy">
 
-            <h1 class="hero-h1">
-                <span class="h1-word">Your</span>
-                <span class="h1-word">agency</span>
-                <span class="h1-word">is</span>
-                <span class="h1-word">losing</span>
-                <span class="h1-word emphasis">₹15–25 lakhs</span>
-                <span class="h1-word">every</span>
-                <span class="h1-word">year.</span>
-            </h1>
-
-            <p class="hero-subtext">
-                While you're focused on bookings, airlines are raising ADMs, NDC channels are closing, and GDS income is evaporating.
-                <strong>We recover what's rightfully yours.</strong>
+            <p class="hero-kicker" id="hero-kicker">
+                Founded by IndiGo &amp; Accelya alumni &nbsp;&bull;&nbsp; India's only agency-side advisor
             </p>
 
-            <a href="#contact" class="btn-primary">Recover Your Revenue</a>
-        </div>
+            <h1 class="hero-h1" id="hero-h1">
+                <span class="line line--plain">Right now, your</span>
+                <span class="line line--plain">agency is</span>
+                <span class="line line--alarm">bleeding money.</span>
+            </h1>
 
-        <div class="hero-visual">
-            <img src="assets/plane.png" alt="Aircraft" class="plane" id="plane">
+            <div class="hero-amount" id="hero-amount">
+                <span class="amount-prefix">To the tune of</span>
+                <strong class="amount-figure">
+                    <span class="rupee">₹</span>15&ndash;25<span class="lakhs">L</span>
+                </strong>
+                <span class="amount-suffix">per year. Silently.</span>
+            </div>
+
+            <p class="hero-body" id="hero-body">
+                Airlines quietly raise <mark class="hot-term">ADMs</mark> you haven't challenged.
+                <mark class="hot-term">NDC</mark> channels move inventory you can't see.
+                <mark class="hot-term">GDS</mark> incentives get renegotiated without you at the table.
+                <strong>Every month you wait, more disappears.</strong>
+            </p>
+
+            <div class="hero-actions" id="hero-actions">
+                <a href="#contact" class="btn-primary">
+                    Recover What's Yours
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </a>
+                <a href="#pain" class="btn-ghost">See the numbers</a>
+            </div>
+
+            <p class="hero-trust" id="hero-trust">
+                Response within 24 hours &nbsp;&bull;&nbsp; 100% confidential &nbsp;&bull;&nbsp; No retainer to start
+            </p>
         </div>
     </div>
+
+    <!-- Sky photo credit -->
+    <p class="photo-credit hero-credit">
+        Photo: <a href="https://www.pexels.com/photo/1376889/" target="_blank" rel="noopener">Disha Sheta</a> / Pexels
+    </p>
 </section>
 
-<!-- Problem Section -->
-<section id="problem">
+<!-- ═══════ PAIN STATS ═══════ -->
+<section id="pain">
     <div class="container">
-        <div class="section-header">
-            <h2>The Problem <em>Nobody Addresses</em></h2>
-            <p>These numbers affect your agency right now:</p>
+
+        <header class="sec-header">
+            <span class="eyebrow">The Numbers Don't Lie</span>
+            <h2>
+                4,000 Indian agencies.<br>
+                <em>Almost none have a plan.</em>
+            </h2>
+            <p class="sec-sub">
+                The aviation distribution landscape shifted irrevocably in 2022.
+                Most agencies are flying blind — and paying for it every month.
+            </p>
+        </header>
+
+        <div class="stats-row">
+            <div class="stat-card stat-card--alert reveal">
+                <div class="stat-num" data-target="4000" data-suffix="+">0+</div>
+                <p class="stat-label">IATA-member agencies in India<br>navigating NDC with no strategy</p>
+                <div class="stat-accent"></div>
+            </div>
+            <div class="stat-card reveal" style="transition-delay:.08s">
+                <div class="stat-num" data-target="40" data-suffix="%">0%</div>
+                <p class="stat-label">of IndiGo's domestic inventory<br>now in NDC-only channels</p>
+                <div class="stat-accent"></div>
+            </div>
+            <div class="stat-card stat-card--urgent reveal" style="transition-delay:.16s">
+                <div class="stat-num" data-target="30" data-suffix=" days">0 days</div>
+                <p class="stat-label">to challenge an ADM before<br>the money is gone for good</p>
+                <div class="stat-accent"></div>
+            </div>
+            <div class="stat-card reveal" style="transition-delay:.24s">
+                <div class="stat-num" data-target="45" data-suffix="B">0B</div>
+                <p class="stat-label">USD in NDC revenue available<br>to agencies that adapt by 2030</p>
+                <div class="stat-accent"></div>
+            </div>
         </div>
 
-        <div class="stats-grid">
-            <div class="stat-box">
-                <div class="stat-number" data-value="4000">0</div>
-                <p class="stat-text">IATA agencies in India navigating NDC without a strategy</p>
+        <!-- Pain image row -->
+        <div class="pain-split reveal">
+            <div class="pain-image-wrap">
+                <img
+                    src="https://images.pexels.com/photos/7172857/pexels-photo-7172857.jpeg?auto=compress&cs=tinysrgb&w=800&h=560&dpr=1"
+                    alt="Travel agency owner reviewing financial losses"
+                    class="pain-img"
+                    loading="lazy"
+                >
+                <p class="photo-credit">Photo: <a href="https://www.pexels.com/photo/7172857/" target="_blank" rel="noopener">N Voitkevich</a> / Pexels</p>
             </div>
-            <div class="stat-box">
-                <div class="stat-number" data-value="40">0</div>
-                <span class="stat-percent">%</span>
-                <p class="stat-text">of domestic content now locked behind NDC-only channels</p>
-            </div>
-            <div class="stat-box">
-                <div class="stat-number" data-value="30">0</div>
-                <span class="stat-suffix">days</span>
-                <p class="stat-text">to challenge an ADM before the money is gone forever</p>
-            </div>
-            <div class="stat-box">
-                <div class="stat-number" data-value="45">0</div>
-                <span class="stat-suffix">B USD</span>
-                <p class="stat-text">in NDC retail revenue that should be yours by 2030</p>
+            <div class="pain-copy">
+                <h3>Three Leaks. One Bleeding Agency.</h3>
+                <div class="pain-item">
+                    <div class="pain-marker pain-marker--red"></div>
+                    <div>
+                        <strong>ADM Deductions</strong>
+                        <p>Airlines raise ADMs without warning. Most go unchallenged because agencies don't know the 30-day window, don't have the documentation, or don't know how to fight back. That's ₹5–12 lakhs per year, gone.</p>
+                    </div>
+                </div>
+                <div class="pain-item">
+                    <div class="pain-marker pain-marker--red"></div>
+                    <div>
+                        <strong>NDC Blindspot</strong>
+                        <p>IndiGo moved 40% of its domestic inventory to NDC-only channels. Agencies still booking GDS are missing fares, paying hidden fees, and losing PLB overrides — often without realising it.</p>
+                    </div>
+                </div>
+                <div class="pain-item">
+                    <div class="pain-marker pain-marker--orange"></div>
+                    <div>
+                        <strong>GDS Income Erosion</strong>
+                        <p>GDS incentive structures are renegotiated every 3–5 years. Airlines push hard. Agencies without data and leverage accept terms that cost them ₹3–8 lakhs annually in foregone incentives.</p>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="problem-breakdown">
-            <div class="problem-item">
-                <h3>🔴 NDC Transition</h3>
-                <p>Airlines are pushing inventory away from GDS. Most agencies have no NDC strategy, losing margin on every booking that moves.</p>
-            </div>
-            <div class="problem-item">
-                <h3>🔴 ADM Deductions</h3>
-                <p>Undisputed ADMs cost you ₹15–25 lakhs annually. Airlines raise them silently. You lose money and have only 30 days to fight back.</p>
-            </div>
-            <div class="problem-item">
-                <h3>🔴 GDS Squeeze</h3>
-                <p>GDS income is under pressure. Airlines renegotiate PLBs in their favor. Passive agencies watch margins erode year-on-year.</p>
-            </div>
-        </div>
     </div>
 </section>
 
-<!-- Solution Section -->
-<section id="solution">
+<!-- ═══════ WHY VOLENZO ═══════ -->
+<section id="why-us">
     <div class="container">
-        <div class="section-header">
-            <h2>You Need <em>An Agency-Side Advisor</em></h2>
-            <p>Not another airline consultant. Not a tech vendor. Someone on your side of the table.</p>
+
+        <div class="why-split">
+            <div class="why-copy">
+                <span class="eyebrow">The Edge</span>
+                <h2>
+                    India's only<br>
+                    <em>agency-side</em> advisor.
+                </h2>
+                <p class="body-text reveal">
+                    Every consultant in this space works for airlines or GDS platforms.
+                    We don't. We were <strong>inside the system</strong> — at IndiGo Airlines and Accelya
+                    (the BSP settlement engine used by airlines globally) — and we
+                    walked out to fight for agencies instead.
+                </p>
+                <p class="body-text reveal">
+                    We know how ADMs are constructed. We know which BSP codes are
+                    wrong and how to prove it. We know what NDC contracts airlines
+                    will bend on, and which clauses expose you.
+                    <strong>Because we wrote some of those processes ourselves.</strong>
+                </p>
+
+                <ul class="why-pillars reveal">
+                    <li>
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" stroke="#0052CC" stroke-width="1.5"/><path d="M5.5 9.5L8 12L12.5 6" stroke="#0052CC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Agency-side only — we never represent airlines
+                    </li>
+                    <li>
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" stroke="#0052CC" stroke-width="1.5"/><path d="M5.5 9.5L8 12L12.5 6" stroke="#0052CC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Deep BSP, NDC, and IATA settlement expertise
+                    </li>
+                    <li>
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" stroke="#0052CC" stroke-width="1.5"/><path d="M5.5 9.5L8 12L12.5 6" stroke="#0052CC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Measurable recovery — we track rupees, not slides
+                    </li>
+                    <li>
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><circle cx="9" cy="9" r="8" stroke="#0052CC" stroke-width="1.5"/><path d="M5.5 9.5L8 12L12.5 6" stroke="#0052CC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        India-focused — we understand your market, your airlines
+                    </li>
+                </ul>
+            </div>
+
+            <div class="why-visual reveal">
+                <div class="why-img-frame">
+                    <img
+                        src="https://images.pexels.com/photos/3769118/pexels-photo-3769118.jpeg?auto=compress&cs=tinysrgb&w=700&h=520&dpr=1"
+                        alt="Strategic aviation route planning"
+                        class="why-img"
+                        loading="lazy"
+                    >
+                    <p class="photo-credit">Photo: <a href="https://www.pexels.com/photo/3769118/" target="_blank" rel="noopener">Olly</a> / Pexels</p>
+                </div>
+                <div class="why-badge">
+                    <div class="badge-stat">
+                        <strong>₹1 Cr+</strong>
+                        <span>recovered for agencies last year</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="solution-grid">
-            <div class="solution-card">
-                <div class="card-icon">✓</div>
-                <h3>Founded Inside the System</h3>
-                <p>Our founders worked at IndiGo Airlines and Accelya (the global BSP settlement platform). We understand airline operations and settlement mechanics better than anyone else in India.</p>
-            </div>
-
-            <div class="solution-card">
-                <div class="card-icon">✓</div>
-                <h3>Agency-Side Only</h3>
-                <p>We work exclusively for travel agencies. Never for airlines. This means our advice always favors your revenue recovery and margin protection.</p>
-            </div>
-
-            <div class="solution-card">
-                <div class="card-icon">✓</div>
-                <h3>Measurable Outcomes</h3>
-                <p>We don't do strategy theater. Our work generates concrete revenue recovery: unchallenged ADMs clawed back, NDC agreements renegotiated, GDS productivity optimized.</p>
-            </div>
-        </div>
     </div>
 </section>
 
-<!-- Services Section -->
+<!-- ═══════ SERVICES ═══════ -->
 <section id="services">
     <div class="container">
-        <div class="section-header">
-            <h2>How We Help</h2>
-            <p>Three core services, each addressing a specific revenue leak:</p>
-        </div>
+
+        <header class="sec-header">
+            <span class="eyebrow">What We Do</span>
+            <h2>Three services.<br><em>One outcome: more money.</em></h2>
+        </header>
 
         <div class="services-grid">
-            <div class="service-card">
+
+            <article class="svc-card reveal">
+                <div class="svc-top">
+                    <div class="svc-index">01</div>
+                    <svg class="svc-icon" width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+                        <circle cx="14" cy="14" r="11.5" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M14 9V14L17.5 17.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M8.5 14H7M21 14H19.5M14 7.5V6M14 22V20.5" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/>
+                    </svg>
+                </div>
                 <h3>NDC Navigation</h3>
-                <p>We translate the IndiGo NDC mandate into a clear commercial strategy. Renegotiate agreements, fix booking flow gaps, and protect override income as GDS share shrinks.</p>
-                <ul class="service-list">
-                    <li>NDC contract review & renegotiation</li>
+                <p>We translate IndiGo's NDC mandate into a clear commercial strategy for your agency. Renegotiate agreements, close inventory gaps, protect override income as GDS share contracts.</p>
+                <ul class="svc-list">
+                    <li>NDC contract review and renegotiation</li>
+                    <li>Inventory gap analysis and recovery</li>
                     <li>Multi-channel content strategy</li>
-                    <li>GDS-to-NDC migration planning</li>
+                    <li>Override income protection</li>
                 </ul>
-            </div>
+                <div class="svc-outcome">
+                    <strong>Typical outcome:</strong> ₹4–10 lakhs / year recovered
+                </div>
+            </article>
 
-            <div class="service-card">
+            <article class="svc-card reveal" style="transition-delay:.1s">
+                <div class="svc-top">
+                    <div class="svc-index">02</div>
+                    <svg class="svc-icon" width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+                        <path d="M14 3L4.5 8V15C4.5 20.5 9 24.5 14 26C19 24.5 23.5 20.5 23.5 15V8L14 3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+                        <path d="M10 14L13 17L18.5 11" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
                 <h3>ADM Defence</h3>
-                <p>Airlines raise ADMs without warning. We audit your BSP data, build dispute documentation, and challenge deductions within the critical 30-day window.</p>
-                <ul class="service-list">
-                    <li>ADM audit & reconciliation</li>
-                    <li>Dispute documentation & submission</li>
-                    <li>Recovery tracking</li>
+                <p>Airlines raise Agent Debit Memos without notice. We audit your BSP data, identify invalid charges, and mount formal challenges within the 30-day window — before the money is permanently lost.</p>
+                <ul class="svc-list">
+                    <li>Full BSP ADM audit and reconciliation</li>
+                    <li>Dispute documentation and submission</li>
+                    <li>IATA/BSP escalation management</li>
+                    <li>Future ADM prevention protocols</li>
                 </ul>
-            </div>
+                <div class="svc-outcome">
+                    <strong>Typical outcome:</strong> ₹5–12 lakhs / year recovered
+                </div>
+            </article>
 
-            <div class="service-card">
-                <h3>GDS Optimization</h3>
-                <p>Your GDS contract is costing you more than it makes. We restructure PLBs, optimize incentives, and ensure you're capturing every percentage point of available income.</p>
-                <ul class="service-list">
-                    <li>GDS contract analysis</li>
-                    <li>Override & incentive optimization</li>
-                    <li>Volume forecasting & leverage</li>
+            <article class="svc-card reveal" style="transition-delay:.2s">
+                <div class="svc-top">
+                    <div class="svc-index">03</div>
+                    <svg class="svc-icon" width="28" height="28" viewBox="0 0 28 28" fill="none" aria-hidden="true">
+                        <circle cx="14" cy="7" r="3" stroke="currentColor" stroke-width="1.5"/>
+                        <circle cx="5" cy="22" r="3" stroke="currentColor" stroke-width="1.5"/>
+                        <circle cx="23" cy="22" r="3" stroke="currentColor" stroke-width="1.5"/>
+                        <path d="M11.5 9.5L7 19M16.5 9.5L21 19M11 22H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <h3>GDS Optimisation</h3>
+                <p>Your GDS contract is a negotiable instrument — and most agencies don't negotiate. We restructure PLB incentives, optimise booking productivity, and ensure you capture every basis point of available income.</p>
+                <ul class="svc-list">
+                    <li>GDS contract analysis and benchmarking</li>
+                    <li>PLB and override structure review</li>
+                    <li>Productivity optimisation roadmap</li>
+                    <li>Renegotiation support and representation</li>
                 </ul>
+                <div class="svc-outcome">
+                    <strong>Typical outcome:</strong> ₹3–8 lakhs / year recovered
+                </div>
+            </article>
+
+        </div>
+
+        <!-- Social proof image strip -->
+        <div class="credibility-strip reveal">
+            <div class="cred-img-wrap">
+                <img
+                    src="https://images.pexels.com/photos/31447108/pexels-photo-31447108.jpeg?auto=compress&cs=tinysrgb&w=800&h=480&dpr=1"
+                    alt="IndiGo aircraft on runway — Volenzo advisors hold direct IndiGo experience"
+                    class="cred-img"
+                    loading="lazy"
+                >
+                <p class="photo-credit">Photo: <a href="https://www.pexels.com/photo/31447108/" target="_blank" rel="noopener">Ethan Sarkar</a> / Pexels</p>
+            </div>
+            <div class="cred-copy">
+                <h3>We didn't just study this.<br>We lived it.</h3>
+                <p>Our founders held commercial and technical roles inside <strong>IndiGo Airlines</strong> and <strong>Accelya</strong> — the BSP settlement and airline revenue management platform trusted by 150+ airlines globally. We understand the airline's playbook because we helped write parts of it.</p>
+                <p>Now we use that knowledge to fight for agencies instead.</p>
             </div>
         </div>
+
     </div>
 </section>
 
-<!-- Contact Section -->
+<!-- ═══════ CONTACT ═══════ -->
 <section id="contact">
     <div class="container">
-        <div class="contact-wrapper">
-            <div class="contact-content">
-                <h2>Ready to Stop the Bleeding?</h2>
-                <p>The longer you wait, the more revenue disappears. ADM windows close. NDC margins compress. We've helped agencies recover anywhere from ₹10 lakhs to ₹1+ crore in hidden revenue.</p>
-                <div class="contact-meta">
-                    <div><strong>Response time:</strong> Within 24 hours</div>
-                    <div><strong>Confidentiality:</strong> Complete</div>
-                    <div><strong>First call:</strong> Usually 30 minutes</div>
+
+        <div class="contact-grid">
+            <div class="contact-copy reveal">
+                <span class="eyebrow">Start Recovery</span>
+                <h2>
+                    Every day you wait,<br>
+                    <mark class="hot-loss-inline">more disappears.</mark>
+                </h2>
+                <p class="body-text">ADM windows close at 30 days. NDC inventory gaps compound. GDS renegotiations that missed leverage can lock you in for years.</p>
+                <p class="body-text"><strong>The first conversation is free. Response in 24 hours.</strong></p>
+
+                <div class="contact-signals">
+                    <div class="signal">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="8.5" stroke="#0052CC" stroke-width="1.4"/><path d="M10 6V10.5L12.5 13" stroke="#0052CC" stroke-width="1.5" stroke-linecap="round"/></svg>
+                        <span>24-hour response guaranteed</span>
+                    </div>
+                    <div class="signal">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 2L12 7H17.5L13 10.5L15 16L10 12.5L5 16L7 10.5L2.5 7H8L10 2Z" stroke="#0052CC" stroke-width="1.4" stroke-linejoin="round"/></svg>
+                        <span>No retainer required to begin</span>
+                    </div>
+                    <div class="signal">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3" y="5" width="14" height="10" rx="2" stroke="#0052CC" stroke-width="1.4"/><path d="M3 8H17" stroke="#0052CC" stroke-width="1.4"/></svg>
+                        <span>Complete confidentiality</span>
+                    </div>
                 </div>
             </div>
 
-            <form id="contact-form" class="contact-form">
-                <div class="form-field">
-                    <input type="text" id="name" name="name" placeholder="Your Name" required>
+            <form id="contact-form" class="contact-form reveal" style="transition-delay:.1s">
+                <div class="form-row">
+                    <div class="field">
+                        <label for="f-name" class="field-label">Your Name</label>
+                        <input type="text" id="f-name" name="name" placeholder="Rajesh Sharma" required autocomplete="name">
+                    </div>
+                    <div class="field">
+                        <label for="f-agency" class="field-label">Agency Name</label>
+                        <input type="text" id="f-agency" name="agency" placeholder="Sharma Travel Pvt Ltd" required>
+                    </div>
                 </div>
-                <div class="form-field">
-                    <input type="email" id="email" name="email" placeholder="Work Email" required>
+                <div class="field">
+                    <label for="f-email" class="field-label">Work Email</label>
+                    <input type="email" id="f-email" name="email" placeholder="rajesh@sharmatravel.in" required autocomplete="email">
                 </div>
-                <div class="form-field">
-                    <textarea id="message" name="message" placeholder="What's your biggest revenue challenge?" rows="5" required></textarea>
+                <div class="field">
+                    <label for="f-challenge" class="field-label">Biggest revenue challenge right now</label>
+                    <textarea id="f-challenge" name="challenge" rows="4" placeholder="e.g. IndiGo raised an ADM in March we haven't been able to challenge, and we're not sure how to handle the NDC migration..." required></textarea>
                 </div>
-                <button type="submit" class="btn-submit">Start Recovery Conversation</button>
-                <p class="form-note">No sales pitch. Just a direct conversation with someone who understands your business.</p>
+                <button type="submit" class="btn-submit" id="submit-btn">
+                    <span class="btn-label">Send — Start Recovery Conversation</span>
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="M3 8H13M13 8L9 4M13 8L9 12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <p class="form-note">No sales pitch. Just an honest conversation about your numbers.</p>
             </form>
         </div>
+
     </div>
 </section>
 
-<!-- Footer -->
+<!-- ═══════ FOOTER ═══════ -->
 <footer id="footer">
     <div class="container">
-        <div class="footer-content">
-            <div class="footer-col">
-                <img src="assets/volenzologo.png" alt="Volenzo" class="footer-logo">
-                <p>India's only agency-side aviation distribution advisor.</p>
+        <div class="footer-top">
+            <div class="footer-brand">
+                <img src="assets/volenzologo.png" alt="Volenzo Advisory" class="footer-logo">
+                <p>India's only agency-side aviation distribution advisor.<br>Founded by IndiGo &amp; Accelya alumni.</p>
             </div>
-            <div class="footer-col">
-                <h4>Navigation</h4>
-                <ul>
-                    <li><a href="#problem">The Problem</a></li>
-                    <li><a href="#solution">The Solution</a></li>
-                    <li><a href="#services">Services</a></li>
-                    <li><a href="#contact">Contact</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>About</h4>
-                <p>Founded by aviation industry insiders. Focused exclusively on agency-side revenue recovery.</p>
-            </div>
+            <nav class="footer-nav" aria-label="Footer">
+                <a href="#pain">The Problem</a>
+                <a href="#why-us">Why Volenzo</a>
+                <a href="#services">Services</a>
+                <a href="#contact">Contact</a>
+            </nav>
         </div>
         <div class="footer-bottom">
             <p>&copy; 2025 Volenzo Advisory. All rights reserved.</p>
+            <p class="footer-img-credits">
+                Photography: <a href="https://www.pexels.com/@disha-sheta" target="_blank" rel="noopener">Disha Sheta</a>,
+                <a href="https://www.pexels.com/@n-voitkevich" target="_blank" rel="noopener">N Voitkevich</a>,
+                <a href="https://www.pexels.com/@olly" target="_blank" rel="noopener">Olly</a>,
+                <a href="https://www.pexels.com/@ethan-sarkar" target="_blank" rel="noopener">Ethan Sarkar</a>
+                via <a href="https://www.pexels.com" target="_blank" rel="noopener">Pexels</a>
+            </p>
         </div>
     </div>
 </footer>
 
-<script src="script.js"></script>
 </body>
 </html>
