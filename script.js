@@ -433,6 +433,12 @@ function init() {
         });
         if (lenis) lenis.on('scroll', () => AOS.refresh());
         window.addEventListener('load', () => AOS.refresh());
+        // Safety net: after 2.5s force-reveal any AOS element that didn't animate
+        setTimeout(() => {
+            document.querySelectorAll('[data-aos]:not(.aos-animate)').forEach(el => {
+                el.classList.add('aos-animate');
+            });
+        }, 2500);
     }
 
 
@@ -442,26 +448,28 @@ function init() {
     }
 
 
-    /* ── 18. SCROLLREVEAL — problem rows ────────────────── */
-    const rows = document.querySelectorAll('.problem-row');
-    if (has('ScrollReveal') && !reduceMotion && rows.length) {
-        ScrollReveal().reveal('.problem-row', {
-            origin: 'left', distance: '40px',
-            duration: 700, delay: 0, interval: 120,
-            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-            opacity: 0, reset: false,
-        });
-    } else {
-        rows.forEach((row, i) => {
-            const obs = new IntersectionObserver((entries) => {
+    /* ── 18. PROBLEM ROW REVEAL — robust IntersectionObserver ── */
+    const problemRows = document.querySelectorAll('.problem-row');
+    if (problemRows.length) {
+        if (!reduceMotion) {
+            problemRows.forEach(row => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateY(24px)';
+            });
+            const rowIO = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (!entry.isIntersecting) return;
-                    setTimeout(() => row.classList.add('row-visible'), i * 120);
-                    obs.unobserve(entry.target);
+                    const delay = [...problemRows].indexOf(entry.target) * 90;
+                    setTimeout(() => {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }, delay);
+                    rowIO.unobserve(entry.target);
                 });
-            }, { threshold: 0.2 });
-            obs.observe(row);
-        });
+            }, { threshold: 0.10, rootMargin: '0px 0px -30px 0px' });
+            problemRows.forEach(row => rowIO.observe(row));
+        }
+        // If reduceMotion: rows are already visible (no CSS hiding)
     }
 
 
@@ -589,6 +597,25 @@ function init() {
             });
         });
     }
+
+    /* ── MARQUEE scroll-speed boost ── */
+    if (!reduceMotion && !isMobile) {
+        const mqTrack = document.querySelector('.marquee-inner');
+        if (mqTrack && has('gsap') && has('ScrollTrigger')) {
+            ScrollTrigger.create({
+                trigger: 'body', start: 0, end: 'max',
+                onUpdate: (self) => {
+                    const v = Math.min(3, 1 + Math.abs(self.getVelocity() / 2000));
+                    gsap.to(mqTrack, { animationPlaybackRate: v, duration: 0.4 });
+                },
+            });
+        }
+    }
+
+    /* ── ScrollTrigger refresh on mobile ── */
+    setTimeout(() => {
+        if (has('ScrollTrigger')) ScrollTrigger.refresh();
+    }, 600);
 
     /* ── Final refresh ────────────────────────────────── */
     window.addEventListener('load', () => {
