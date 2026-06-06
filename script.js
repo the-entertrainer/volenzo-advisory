@@ -1,258 +1,543 @@
 /* ═══════════════════════════════════════════════════════
-   VOLENZO ADVISORY — Plane physics, sky, interactions
+   VOLENZO ADVISORY — 22-library motion orchestration
+   01 GSAP  02 ScrollTrigger  03 Lenis  04 Splitting  05 SplitType
+   06 Typed  07 tsParticles  08 Atropos  09 VanillaTilt  10 Swiper
+   11 CountUp  12 Anime  13 Motion  14 RoughNotation  15 Vivus
+   16 AOS  17 Rellax  18 ScrollReveal  19 Micron  20 Party
+   21 AutoAnimate  22 ProgressBar
    ═══════════════════════════════════════════════════════ */
 
-gsap.registerPlugin(ScrollTrigger);
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const has = (name) => typeof window[name] !== 'undefined';
 
-/* ──────────────────────────────────────────────────────
-   1. MOBILE MENU
-────────────────────────────────────────────────────── */
-const burger     = document.getElementById('nav-burger');
-const overlay    = document.getElementById('mob-overlay');
-const mobClose   = document.getElementById('mob-close');
-const mobLinks   = overlay.querySelectorAll('a');
+/* ── PRELOADER ─────────────────────────────────────────── */
+(function setupPreloader() {
+    const loader = document.getElementById('loader');
+    if (!loader) { init(); return; }
 
-function openMenu()  { burger.classList.add('open'); overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden'; }
-function closeMenu() { burger.classList.remove('open'); overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
+    const MIN_DURATION = 2800;
+    const start = Date.now();
+    let domReady = false;
+    let timerFired = false;
 
-burger.addEventListener('click', openMenu);
-mobClose.addEventListener('click', closeMenu);
-mobLinks.forEach(l => l.addEventListener('click', closeMenu));
-
-/* ──────────────────────────────────────────────────────
-   2. NAV ELEVATION
-────────────────────────────────────────────────────── */
-const nav = document.getElementById('nav');
-window.addEventListener('scroll', () => {
-    nav.classList.toggle('elevated', window.scrollY > 40);
-}, { passive: true });
-
-/* ──────────────────────────────────────────────────────
-   3. PLANE — physics-based scroll flight
-────────────────────────────────────────────────────── */
-const flightWrapper = document.getElementById('flight-wrapper');
-const planeImg      = document.getElementById('flight-plane');
-const canvas        = document.getElementById('contrail-canvas');
-const ctx           = canvas.getContext('2d');
-
-// Resize canvas to viewport
-function resizeCanvas() {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas, { passive: true });
-
-// Flight keyframes: [scrollProgress (0–1), x (vw), y (vh), rot (deg), rotateY (deg), scale]
-// Plane starts bottom-right in hero, climbs across sky, exits upper-left
-const KEYFRAMES = [
-    [0.00,  58,  54,  -5,   8,  1.00],
-    [0.08,  54,  46,  -9,  14,  1.04],
-    [0.16,  48,  36,  -14, 22,  1.08],   // banking into climb
-    [0.26,  40,  26,  -19, 29,  1.10],   // hardest bank + climb
-    [0.36,  30,  18,  -15, 22,  1.05],   // easing through the turn
-    [0.46,  20,  13,  -10, 12,  0.98],   // leveling off
-    [0.58,  12,   9,   -6,  5,  0.88],   // cruising, ascending away
-    [0.72,   4,   5,   -4,  0,  0.76],   // receding into distance
-    [0.88,  -4,   3,   -2, -5,  0.63],   // departing
-    [1.00, -12,   1,   -1, -8,  0.50],   // gone
-];
-
-// Smooth lerp between keyframes
-function lerp(a, b, t) { return a + (b - a) * t; }
-
-function getFlightState(progress) {
-    let i = 0;
-    while (i < KEYFRAMES.length - 2 && KEYFRAMES[i + 1][0] <= progress) i++;
-
-    const kfA = KEYFRAMES[i];
-    const kfB = KEYFRAMES[i + 1];
-    const range = kfB[0] - kfA[0];
-    const t = range === 0 ? 0 : (progress - kfA[0]) / range;
-
-    // Ease within segment for more natural feel
-    const eased = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
-
-    return {
-        x:       lerp(kfA[1], kfB[1], eased),
-        y:       lerp(kfA[2], kfB[2], eased),
-        rot:     lerp(kfA[3], kfB[3], eased),
-        rotateY: lerp(kfA[4], kfB[4], eased),
-        scale:   lerp(kfA[5], kfB[5], eased),
-    };
-}
-
-// Contrail: store recent centre positions
-const contrailPoints = [];
-const CONTRAIL_MAX   = 80;
-
-// Current rendered plane centre (screen coords) — updated every frame
-let planeCentreX = 0;
-let planeCentreY = 0;
-
-// Apply flight state
-function applyFlight(progress) {
-    const state = getFlightState(Math.max(0, Math.min(1, progress)));
-    const vw = window.innerWidth  / 100;
-    const vh = window.innerHeight / 100;
-
-    const targetX = state.x * vw;
-    const targetY = state.y * vh;
-
-    gsap.set(flightWrapper, {
-        x: targetX,
-        y: targetY,
-        rotation:  state.rot,
-        rotateY:   state.rotateY,
-        scale:     state.scale,
-        transformPerspective: 900,
-        transformOrigin: 'center center',
-    });
-
-    // Track centre for contrail
-    const rect = flightWrapper.getBoundingClientRect();
-    planeCentreX = rect.left + rect.width  / 2;
-    planeCentreY = rect.top  + rect.height / 2;
-}
-
-// GSAP ticker draws contrail every frame
-function drawContrail() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (contrailPoints.length < 3) return;
-
-    // Two parallel trails (like twin engine exhaust)
-    [-8, 8].forEach(offset => {
-        ctx.beginPath();
-        ctx.moveTo(contrailPoints[0].x + offset, contrailPoints[0].y);
-
-        for (let i = 1; i < contrailPoints.length; i++) {
-            // Smooth with quadratic curves
-            const mid = {
-                x: (contrailPoints[i - 1].x + contrailPoints[i].x) / 2 + offset,
-                y: (contrailPoints[i - 1].y + contrailPoints[i].y) / 2,
-            };
-            ctx.quadraticCurveTo(contrailPoints[i - 1].x + offset, contrailPoints[i - 1].y, mid.x, mid.y);
-        }
-
-        // Gradient along path
-        const oldest = contrailPoints[0];
-        const newest = contrailPoints[contrailPoints.length - 1];
-        const grad = ctx.createLinearGradient(oldest.x, oldest.y, newest.x, newest.y);
-        grad.addColorStop(0,   'rgba(255,255,255,0)');
-        grad.addColorStop(0.4, 'rgba(255,255,255,0.12)');
-        grad.addColorStop(0.8, 'rgba(255,255,255,0.32)');
-        grad.addColorStop(1,   'rgba(255,255,255,0.5)');
-
-        ctx.strokeStyle  = grad;
-        ctx.lineWidth    = 3;
-        ctx.lineCap      = 'round';
-        ctx.lineJoin     = 'round';
-        ctx.stroke();
-    });
-}
-
-// Record plane position for contrail
-let lastSampleTime = 0;
-gsap.ticker.add((time) => {
-    // Sample every ~16ms
-    if (time - lastSampleTime > 16) {
-        if (planeCentreX > 0 || planeCentreY > 0) {
-            contrailPoints.push({ x: planeCentreX, y: planeCentreY });
-            if (contrailPoints.length > CONTRAIL_MAX) contrailPoints.shift();
-        }
-        lastSampleTime = time;
+    function tryExit() {
+        if (!domReady || !timerFired) return;
+        exitPreloader();
     }
-    drawContrail();
-});
 
-// Scroll-linked flight
-ScrollTrigger.create({
-    trigger: document.body,
-    start: 'top top',
-    end: 'bottom bottom',
-    scrub: false,          // manual update for custom easing
-    onUpdate: (self) => {
-        applyFlight(self.progress);
-    },
-});
-
-// Set initial position (before any scroll)
-applyFlight(0);
-
-// Idle float lives entirely in CSS (planeFloat keyframes on #flight-plane),
-// keeping it on a child element so GSAP's scroll transform on #flight-wrapper
-// never conflicts with it.
-
-// Cloud parallax (slower than scroll for depth illusion)
-const cloudA = document.querySelector('.sky-cloud--a');
-const cloudB = document.querySelector('.sky-cloud--b');
-const cloudC = document.querySelector('.sky-cloud--c');
-
-if (cloudA) {
-    ScrollTrigger.create({
-        start: 'top top', end: 'bottom bottom',
-        onUpdate: (self) => {
-            const p = self.progress;
-            gsap.set(cloudA, { x: p * -80, y: p * -60 });
-            gsap.set(cloudB, { x: p *  40, y: p * -90 });
-            gsap.set(cloudC, { x: p * -30, y: p * -70 });
+    function exitPreloader() {
+        if (has('gsap')) {
+            const tl = gsap.timeline({ onComplete: () => { loader.style.display = 'none'; } });
+            tl.to('#loader-logo', { scale: 1.06, duration: 0.25, ease: 'power2.out' })
+              .to('#loader-logo', { opacity: 0, duration: 0.35, ease: 'power2.in' })
+              .to('#loader', { yPercent: -100, duration: 0.65, ease: 'power4.inOut' }, '-=0.1')
+              .call(() => {
+                  document.body.classList.remove('loading');
+                  document.body.style.overflow = '';
+                  init();
+              });
+        } else {
+            loader.style.transition = 'opacity 0.4s';
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.display = 'none';
+                document.body.classList.remove('loading');
+                document.body.style.overflow = '';
+                init();
+            }, 420);
         }
+    }
+
+    const elapsed = Date.now() - start;
+    const remaining = Math.max(0, MIN_DURATION - elapsed);
+    setTimeout(() => { timerFired = true; tryExit(); }, remaining);
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => { domReady = true; tryExit(); });
+    } else {
+        domReady = true;
+        tryExit();
+    }
+})();
+
+
+function init() {
+
+    /* ── 03. LENIS — smooth momentum scroll ───────────── */
+    let lenis = null;
+    if (has('Lenis') && !reduceMotion) {
+        lenis = new Lenis({
+            duration: 1.15,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            smoothWheel: true,
+            touchMultiplier: 1.6,
+        });
+        if (has('gsap') && has('ScrollTrigger')) {
+            gsap.registerPlugin(ScrollTrigger);
+            lenis.on('scroll', ScrollTrigger.update);
+            gsap.ticker.add((time) => lenis.raf(time * 1000));
+            gsap.ticker.lagSmoothing(0);
+        } else {
+            const raf = (t) => { lenis.raf(t); requestAnimationFrame(raf); };
+            requestAnimationFrame(raf);
+        }
+    } else if (has('gsap') && has('ScrollTrigger')) {
+        gsap.registerPlugin(ScrollTrigger);
+    }
+
+    const NAV_OFFSET = -72;
+    function scrollToTarget(target) {
+        const el = document.querySelector(target);
+        if (!el) return;
+        if (lenis) lenis.scrollTo(el, { offset: NAV_OFFSET, duration: 1.3 });
+        else el.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth' });
+    }
+
+
+    /* ── NAVIGATION ──────────────────────────────────── */
+    const nav      = document.getElementById('nav');
+    const burger   = document.getElementById('nav-burger');
+    const overlay  = document.getElementById('mob-overlay');
+    const mobClose = document.getElementById('mob-close');
+
+    const onScrollNav = () => nav.classList.toggle('elevated', window.scrollY > 30);
+    window.addEventListener('scroll', onScrollNav, { passive: true });
+    onScrollNav();
+
+    function openMenu() {
+        burger.classList.add('open');
+        overlay.classList.add('open');
+        overlay.setAttribute('aria-hidden', 'false');
+        burger.setAttribute('aria-expanded', 'true');
+        if (lenis) lenis.stop();
+        document.body.style.overflow = 'hidden';
+    }
+    function closeMenu() {
+        burger.classList.remove('open');
+        overlay.classList.remove('open');
+        overlay.setAttribute('aria-hidden', 'true');
+        burger.setAttribute('aria-expanded', 'false');
+        if (lenis) lenis.start();
+        document.body.style.overflow = '';
+    }
+    if (burger) burger.addEventListener('click', () => overlay.classList.contains('open') ? closeMenu() : openMenu());
+    if (mobClose) mobClose.addEventListener('click', closeMenu);
+
+    document.querySelectorAll('a[data-scroll]').forEach(link => {
+        link.addEventListener('click', (e) => {
+            const href = link.getAttribute('href');
+            if (!href || !href.startsWith('#')) return;
+            e.preventDefault();
+            if (overlay.classList.contains('open')) closeMenu();
+            setTimeout(() => scrollToTarget(href), overlay ? 60 : 0);
+        });
     });
-}
 
-/* ──────────────────────────────────────────────────────
-   4. STAT COUNTERS
-────────────────────────────────────────────────────── */
-document.querySelectorAll('.stat-num[data-target]').forEach(el => {
-    const target = parseInt(el.dataset.target, 10);
-    const suffix = el.dataset.suffix || '';
-
-    ScrollTrigger.create({
-        trigger: el,
-        start: 'top 88%',
-        once: true,
-        onEnter() {
-            const counter = { v: 0 };
-            gsap.to(counter, {
-                v: target, duration: 2.4, ease: 'power3.out',
-                onUpdate() { el.textContent = Math.ceil(counter.v).toLocaleString() + suffix; },
+    // Scroll-spy
+    const navLinks = [...document.querySelectorAll('.nav-links a')];
+    const sections = navLinks.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+    if (sections.length) {
+        const spy = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                const id = '#' + entry.target.id;
+                navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === id));
             });
-        },
+        }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+        sections.forEach(s => spy.observe(s));
+    }
+
+
+    /* ── SCROLL PROGRESS ─────────────────────────────── */
+    const progress = document.getElementById('scroll-progress');
+    if (progress && has('gsap') && has('ScrollTrigger')) {
+        gsap.to(progress, {
+            width: '100%', ease: 'none',
+            scrollTrigger: { start: 0, end: 'max', scrub: 0.3 },
+        });
+    } else if (progress) {
+        window.addEventListener('scroll', () => {
+            const h = document.documentElement;
+            progress.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+        }, { passive: true });
+    }
+
+
+    /* ── 04. SPLITTING.js — hero H1 char reveal ────────── */
+    const heroH1 = document.querySelector('.hero-h1');
+    if (heroH1 && has('Splitting') && !reduceMotion) {
+        Splitting({ target: heroH1, by: 'chars' });
+        requestAnimationFrame(() => requestAnimationFrame(() => heroH1.classList.add('split-in')));
+    } else if (heroH1) {
+        heroH1.classList.add('split-in');
+    }
+
+
+    /* ── 05. SplitType — problem title line splits ─────── */
+    const problemTitle = document.querySelector('.problem-title');
+    if (problemTitle && has('SplitType') && !reduceMotion) {
+        const splitProblem = new SplitType(problemTitle, { types: 'lines' });
+        splitProblem.lines.forEach((line, i) => {
+            line.style.opacity = '0';
+            line.style.transform = 'translateY(24px)';
+            line.style.transition = `opacity 0.55s ease ${i * 120}ms, transform 0.55s ease ${i * 120}ms`;
+        });
+        const titleObs = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                splitProblem.lines.forEach(line => {
+                    line.style.opacity = '1';
+                    line.style.transform = 'translateY(0)';
+                });
+                titleObs.unobserve(entry.target);
+            });
+        }, { threshold: 0.3 });
+        titleObs.observe(problemTitle);
+    }
+
+
+    /* ── 06. TYPED.js — rotating pain strings ──────────── */
+    const typedEl = document.getElementById('typed-target');
+    if (typedEl && has('Typed')) {
+        new Typed(typedEl, {
+            strings: [
+                'unchallenged <strong>ADMs</strong>.',
+                'invisible <strong>NDC</strong> inventory.',
+                'eroding <strong>GDS</strong> incentives.',
+                'fares you never see.',
+            ],
+            typeSpeed: 42, backSpeed: 22, backDelay: 1800,
+            startDelay: 900, loop: true, smartBackspace: true,
+        });
+    } else if (typedEl) {
+        typedEl.innerHTML = 'unchallenged <strong>ADMs</strong>.';
+    }
+
+
+    /* ── 07. tsParticles — atmospheric sky ─────────────── */
+    if (has('tsParticles') && !reduceMotion) {
+        tsParticles.load({
+            id: 'particles',
+            options: {
+                fpsLimit: 60,
+                fullScreen: { enable: false },
+                particles: {
+                    number: { value: 35, density: { enable: true, area: 900 } },
+                    color: { value: ['#0052CC', '#1D6AE8', '#FFFFFF'] },
+                    opacity: { value: { min: 0.06, max: 0.28 } },
+                    size: { value: { min: 1, max: 3 } },
+                    move: {
+                        enable: true, speed: 0.45, direction: 'top-right',
+                        outModes: { default: 'out' }, straight: false,
+                    },
+                    links: {
+                        enable: true, distance: 140,
+                        color: '#1D6AE8', opacity: 0.1, width: 1,
+                    },
+                },
+                interactivity: {
+                    events: { onHover: { enable: true, mode: 'grab' } },
+                    modes: { grab: { distance: 160, links: { opacity: 0.22 } } },
+                },
+                detectRetina: true,
+            },
+        });
+    }
+
+
+    /* ── 08. ATROPOS — 3D hero plane scene ─────────────── */
+    if (has('Atropos') && !reduceMotion && window.matchMedia('(pointer:fine)').matches) {
+        const heroScene = document.getElementById('hero-atropos');
+        if (heroScene) {
+            Atropos({
+                el: '#hero-atropos',
+                activeOffset: 32,
+                shadow: false,
+                rotateXMax: 8,
+                rotateYMax: 11,
+                highlight: false,
+            });
+        }
+    }
+
+
+    /* ── 09. VANILLA-TILT — 3D service cards ───────────── */
+    if (has('VanillaTilt') && !reduceMotion && window.matchMedia('(pointer:fine)').matches) {
+        VanillaTilt.init(document.querySelectorAll('.svc-card[data-tilt]'), {
+            scale: 1.02, speed: 600, perspective: 1100,
+            glare: true, 'max-glare': 0.08,
+        });
+    }
+
+
+    /* ── 10. SWIPER — mobile service cards ─────────────── */
+    let swiperInstance = null;
+    function initSwiper() {
+        const isDesktop = window.innerWidth >= 1024;
+        if (!isDesktop && !swiperInstance && has('Swiper')) {
+            swiperInstance = new Swiper('.services-swiper', {
+                slidesPerView: 1.12,
+                centeredSlides: false,
+                spaceBetween: 16,
+                grabCursor: true,
+                pagination: { el: '.swiper-pagination', clickable: true },
+                breakpoints: {
+                    480: { slidesPerView: 1.3, spaceBetween: 20 },
+                    680: { slidesPerView: 2.1, spaceBetween: 24 },
+                },
+            });
+        } else if (isDesktop && swiperInstance) {
+            swiperInstance.destroy(true, true);
+            swiperInstance = null;
+        }
+    }
+    window.addEventListener('resize', initSwiper, { passive: true });
+    initSwiper();
+
+
+    /* ── 01+02. GSAP + ScrollTrigger — hero fly-away ────── */
+    if (has('gsap') && has('ScrollTrigger') && !reduceMotion) {
+        // .hero-float owns GSAP; Atropos owns #hero-atropos children; CSS owns .hero-plane
+        gsap.to('.hero-float', {
+            y: -180, x: 50, scale: 0.78, opacity: 0.05, ease: 'none',
+            scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.2 },
+        });
+        gsap.to('.hero-copy', {
+            y: -60, opacity: 0.4, ease: 'none',
+            scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1 },
+        });
+    }
+
+
+    /* ── 11. COUNTUP.js — animated numbers ─────────────── */
+    function runCounter(el) {
+        const end    = parseFloat(el.dataset.count);
+        const prefix = el.dataset.prefix || '';
+        const suffix = el.dataset.suffix || '';
+        if (has('countUp') && !reduceMotion) {
+            const c = new countUp.CountUp(el, end, {
+                prefix, suffix, duration: 2.4,
+                enableScrollSpy: false, useEasing: true,
+                decimalPlaces: end % 1 !== 0 ? 1 : 0,
+            });
+            if (!c.error) { c.start(); return; }
+        }
+        el.textContent = prefix + end.toLocaleString() + suffix;
+    }
+    document.querySelectorAll('[data-count]').forEach(el => {
+        const obs = new IntersectionObserver((entries, o) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                runCounter(entry.target);
+                o.unobserve(entry.target);
+            });
+        }, { threshold: 0.5 });
+        obs.observe(el);
     });
-});
 
-/* ──────────────────────────────────────────────────────
-   5. SCROLL REVEALS
-────────────────────────────────────────────────────── */
-const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add('visible');
-        revealObserver.unobserve(entry.target);
+
+    /* ── 12. ANIME.js — SVG icon stroke draw on hover ───── */
+    if (has('anime') && !reduceMotion) {
+        document.querySelectorAll('.svc-card').forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                anime({
+                    targets: [...card.querySelectorAll('.svc-icon-svg path')],
+                    strokeDashoffset: [anime.setDashoffset, 0],
+                    easing: 'easeInOutSine',
+                    duration: 550,
+                    delay: (el, i) => i * 50,
+                });
+            });
+        });
+    }
+
+
+    /* ── 13. MOTION ONE — CTA spring physics ───────────── */
+    if (has('Motion') && !reduceMotion) {
+        document.querySelectorAll('.btn-primary, .btn-submit, .nav-cta').forEach(btn => {
+            btn.addEventListener('mousedown', () => {
+                Motion.animate(btn, { scale: 0.95 }, { duration: 0.1, easing: 'ease-out' });
+            });
+            const release = () => {
+                Motion.animate(btn, { scale: 1 }, {
+                    easing: Motion.spring({ stiffness: 380, damping: 22, mass: 1 }),
+                });
+            };
+            btn.addEventListener('mouseup', release);
+            btn.addEventListener('mouseleave', release);
+        });
+    }
+
+
+    /* ── 14. ROUGH NOTATION — hand-drawn ₹25L highlight ── */
+    const leakNum = document.getElementById('leak-num');
+    if (leakNum && has('RoughNotation') && !reduceMotion) {
+        const annotation = RoughNotation.annotate(leakNum, {
+            type: 'underline',
+            color: '#E63946',
+            strokeWidth: 2.5,
+            padding: 3,
+            animate: true,
+            animationDuration: 700,
+        });
+        const rnObs = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                annotation.show();
+                rnObs.unobserve(entry.target);
+            });
+        }, { threshold: 0.6 });
+        rnObs.observe(leakNum);
+    }
+
+
+    /* ── 15. VIVUS — row-divider SVG line draw-in ────────── */
+    if (has('Vivus') && !reduceMotion) {
+        ['div-svg-1', 'div-svg-2'].forEach(id => {
+            const svgEl = document.getElementById(id);
+            if (!svgEl) return;
+            const vivusObs = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    new Vivus(id, { type: 'oneByOne', duration: 60, animTimingFunction: Vivus.EASE });
+                    vivusObs.unobserve(entry.target);
+                });
+            }, { threshold: 0.5 });
+            vivusObs.observe(svgEl);
+        });
+    }
+
+
+    /* ── 16. AOS — declarative scroll reveals ────────────── */
+    if (has('AOS')) {
+        AOS.init({
+            duration: 680, easing: 'ease-out-cubic',
+            once: true, offset: 60, disable: reduceMotion,
+        });
+        if (lenis) lenis.on('scroll', () => AOS.refresh());
+        window.addEventListener('load', () => AOS.refresh());
+    }
+
+
+    /* ── 17. RELLAX — cloud blob parallax ───────────────── */
+    if (has('Rellax') && !reduceMotion) {
+        new Rellax('.rellax', { center: true, round: true });
+    }
+
+
+    /* ── 18. SCROLLREVEAL — problem rows ────────────────── */
+    const rows = document.querySelectorAll('.problem-row');
+    if (has('ScrollReveal') && !reduceMotion && rows.length) {
+        ScrollReveal().reveal('.problem-row', {
+            origin: 'left', distance: '40px',
+            duration: 700, delay: 0, interval: 120,
+            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+            opacity: 0, reset: false,
+        });
+    } else {
+        rows.forEach((row, i) => {
+            const obs = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    setTimeout(() => row.classList.add('row-visible'), i * 120);
+                    obs.unobserve(entry.target);
+                });
+            }, { threshold: 0.2 });
+            obs.observe(row);
+        });
+    }
+
+
+    /* ── 19. MICRON.js — nav link micro-interactions ────── */
+    // Micron auto-activates on data-micron attributes — no explicit init needed.
+
+
+    /* ── 21. AUTOMATE — form DOM transitions ───────────── */
+    const formWrap = document.querySelector('.contact-form-wrap');
+    if (formWrap && has('autoAnimate')) {
+        autoAnimate(formWrap);
+    }
+
+
+    /* ── 22. PROGRESSBAR.js — animated metric bars ──────── */
+    const pbColors = ['#0052CC', '#1D6AE8', '#E63946'];
+    [
+        { id: 'mbar-1', pct: 0.92 },
+        { id: 'mbar-2', pct: 0.72 },
+        { id: 'mbar-3', pct: 0.85 },
+    ].forEach(({ id, pct }, i) => {
+        const host = document.getElementById(id);
+        if (!host || !has('ProgressBar')) return;
+        const bar = new ProgressBar.Line(host, {
+            strokeWidth: 4, trailWidth: 2,
+            color: pbColors[i], trailColor: 'rgba(255,255,255,0.08)',
+            easing: 'easeInOut', duration: 1800,
+        });
+        const obs = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                bar.animate(pct);
+                obs.unobserve(entry.target);
+            });
+        }, { threshold: 0.5 });
+        obs.observe(host);
     });
-}, { threshold: 0.1, rootMargin: '0px 0px -32px 0px' });
 
-document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+    [
+        { id: 'sbar-1', pct: 0.68 },
+        { id: 'sbar-2', pct: 0.88 },
+        { id: 'sbar-3', pct: 0.56 },
+    ].forEach(({ id, pct }) => {
+        const host = document.getElementById(id);
+        if (!host || !has('ProgressBar')) return;
+        const bar = new ProgressBar.Line(host, {
+            strokeWidth: 6, trailWidth: 6,
+            color: '#0052CC', trailColor: '#E8EDFF',
+            easing: 'easeInOut', duration: 1600,
+        });
+        const obs = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (!entry.isIntersecting) return;
+                bar.animate(pct);
+                obs.unobserve(entry.target);
+            });
+        }, { threshold: 0.4 });
+        obs.observe(host);
+    });
 
-/* ──────────────────────────────────────────────────────
-   6. CONTACT FORM
-────────────────────────────────────────────────────── */
-const form      = document.getElementById('contact-form');
-const submitBtn = document.getElementById('submit-btn');
 
-if (form && submitBtn) {
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const label = submitBtn.querySelector('.btn-label');
-        const orig  = label.textContent;
+    /* ── CONTACT FORM ─────────────────────────────────── */
+    const form      = document.getElementById('contact-form');
+    const submitBtn = document.getElementById('submit-btn');
+    if (form && submitBtn && formWrap) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            submitBtn.disabled = true;
 
-        submitBtn.disabled = true;
-        label.textContent  = 'Message sent — we\'ll respond within 24 hours';
-        form.reset();
+            // 20. Party.js confetti burst
+            if (has('party') && !reduceMotion) {
+                party.confetti(submitBtn, {
+                    count: party.variation.range(60, 100),
+                    spread: party.variation.range(50, 80),
+                    size: party.variation.range(0.7, 1.2),
+                });
+            }
 
-        setTimeout(() => {
-            label.textContent  = orig;
-            submitBtn.disabled = false;
-        }, 6000);
+            // AutoAnimate (lib 21) transitions this DOM swap smoothly
+            setTimeout(() => {
+                formWrap.innerHTML = `
+                    <div class="form-success-msg">
+                        <strong>Message sent.</strong>
+                        <p>We&rsquo;ll review your situation and reply within 24&nbsp;hours.</p>
+                    </div>`;
+            }, 300);
+        });
+    }
+
+
+    /* ── Final refresh ────────────────────────────────── */
+    window.addEventListener('load', () => {
+        if (has('ScrollTrigger')) ScrollTrigger.refresh();
+        if (has('AOS')) AOS.refresh();
     });
 }
