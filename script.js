@@ -214,7 +214,7 @@ function init() {
     }
 
 
-    /* ── 07. tsParticles — atmospheric sky ─────────────── */
+    /* ── 07. tsParticles — light-bg atmosphere ─────────── */
     if (has('tsParticles') && !reduceMotion) {
         tsParticles.load({
             id: 'particles',
@@ -222,22 +222,22 @@ function init() {
                 fpsLimit: 60,
                 fullScreen: { enable: false },
                 particles: {
-                    number: { value: 35, density: { enable: true, area: 900 } },
-                    color: { value: ['#0052CC', '#1D6AE8', '#FFFFFF'] },
-                    opacity: { value: { min: 0.06, max: 0.28 } },
-                    size: { value: { min: 1, max: 3 } },
+                    number: { value: 32, density: { enable: true, area: 900 } },
+                    color: { value: ['#0052CC', '#1D6AE8', '#6480CC'] },
+                    opacity: { value: { min: 0.05, max: 0.18 } },
+                    size: { value: { min: 1, max: 2.5 } },
                     move: {
-                        enable: true, speed: 0.45, direction: 'top-right',
+                        enable: true, speed: 0.4, direction: 'top-right',
                         outModes: { default: 'out' }, straight: false,
                     },
                     links: {
                         enable: true, distance: 140,
-                        color: '#1D6AE8', opacity: 0.1, width: 1,
+                        color: '#0052CC', opacity: 0.07, width: 1,
                     },
                 },
                 interactivity: {
                     events: { onHover: { enable: true, mode: 'grab' } },
-                    modes: { grab: { distance: 160, links: { opacity: 0.22 } } },
+                    modes: { grab: { distance: 160, links: { opacity: 0.18 } } },
                 },
                 detectRetina: true,
             },
@@ -534,6 +534,44 @@ function init() {
         });
     }
 
+
+    /* ── REACTIVE LIGHT — cursor-driven glass illumination ── */
+    if (!reduceMotion) {
+        let lxTarget = 50, lyTarget = 30;
+        let lxCur    = 50, lyCur    = 30;
+        let lightRaf = null;
+
+        document.addEventListener('mousemove', (e) => {
+            lxTarget = (e.clientX / window.innerWidth  * 100);
+            lyTarget = (e.clientY / window.innerHeight * 100);
+            if (!lightRaf) lightRaf = requestAnimationFrame(tickLight);
+        }, { passive: true });
+
+        function tickLight() {
+            lxCur += (lxTarget - lxCur) * 0.07;
+            lyCur += (lyTarget - lyCur) * 0.07;
+            document.documentElement.style.setProperty('--lx', lxCur.toFixed(2));
+            document.documentElement.style.setProperty('--ly', lyCur.toFixed(2));
+            if (Math.abs(lxTarget - lxCur) > 0.05 || Math.abs(lyTarget - lyCur) > 0.05) {
+                lightRaf = requestAnimationFrame(tickLight);
+            } else {
+                lightRaf = null;
+            }
+        }
+
+        // Per-card cursor shimmer (card-local coordinates)
+        document.querySelectorAll('.svc-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const r = card.getBoundingClientRect();
+                card.style.setProperty('--mx', ((e.clientX - r.left) / r.width  * 100).toFixed(1) + '%');
+                card.style.setProperty('--my', ((e.clientY - r.top)  / r.height * 100).toFixed(1) + '%');
+            }, { passive: true });
+            card.addEventListener('mouseleave', () => {
+                card.style.setProperty('--mx', '50%');
+                card.style.setProperty('--my', '50%');
+            });
+        });
+    }
 
     /* ── Final refresh ────────────────────────────────── */
     window.addEventListener('load', () => {
