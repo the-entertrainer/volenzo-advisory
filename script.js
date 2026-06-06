@@ -63,9 +63,10 @@ const has = (name) => typeof window[name] !== 'undefined';
 
 function init() {
 
-    /* ── 03. LENIS — smooth momentum scroll ───────────── */
+    /* ── 03. LENIS — smooth momentum scroll (desktop only) ── */
+    const isMobile = window.innerWidth < 1024;
     let lenis = null;
-    if (has('Lenis') && !reduceMotion) {
+    if (has('Lenis') && !reduceMotion && !isMobile) {
         lenis = new Lenis({
             duration: 1.15,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -295,17 +296,33 @@ function init() {
     initSwiper();
 
 
-    /* ── 01+02. GSAP + ScrollTrigger — hero fly-away ────── */
+    /* ── 01+02. GSAP + ScrollTrigger — hero parallax ───── */
     if (has('gsap') && has('ScrollTrigger') && !reduceMotion) {
-        // .hero-float owns GSAP; Atropos owns #hero-atropos children; CSS owns .hero-plane
-        gsap.to('.hero-float', {
-            y: -180, x: 50, scale: 0.78, opacity: 0.05, ease: 'none',
-            scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.2 },
-        });
-        gsap.to('.hero-copy', {
-            y: -60, opacity: 0.4, ease: 'none',
-            scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1 },
-        });
+        if (!isMobile) {
+            /* Desktop: plane drifts up-right and fades as you scroll past hero */
+            gsap.to('.hero-float', {
+                y: -180, x: 50, scale: 0.78, opacity: 0.05, ease: 'none',
+                scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.2 },
+            });
+            gsap.to('.hero-copy', {
+                y: -60, opacity: 0.4, ease: 'none',
+                scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1 },
+            });
+        } else {
+            /* Mobile: plane takes off — rises and fades as user scrolls down */
+            gsap.to('.hero-visual', {
+                yPercent: -70,
+                scale: 1.18,
+                opacity: 0,
+                ease: 'power2.in',
+                scrollTrigger: {
+                    trigger: '#hero',
+                    start: 'top top',
+                    end: '60% top',
+                    scrub: 1.5,
+                },
+            });
+        }
     }
 
 
