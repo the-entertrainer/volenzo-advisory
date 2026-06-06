@@ -3,117 +3,242 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Volenzo Advisory — Elite Aviation Distribution Consulting</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Geist:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="description" content="Volenzo Advisory — India's only agency-side aviation consulting firm specializing in NDC, ADM recovery, and revenue optimization for TMCs.">
+    <meta name="theme-color" content="#FFFFFF">
+    <title>Volenzo Advisory — Revenue Recovery for Indian Travel Agencies</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-    <!-- GSAP -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
 </head>
 <body>
 
-<div class="cur"></div>
-<div class="cur-ring"></div>
-
-<nav>
-    <a href="#" class="logo-link">
-        <img src="assets/volenzologo.png" alt="Volenzo Advisory" class="logo-img">
+<!-- Navigation -->
+<nav id="nav">
+    <a href="#" class="nav-logo">
+        <img src="assets/volenzologo.png" alt="Volenzo Advisory">
     </a>
-    <ul class="nav-links">
-        <li><a href="#about">Expertise</a></li>
+    <ul class="nav-menu">
+        <li><a href="#problem">The Problem</a></li>
+        <li><a href="#solution">The Solution</a></li>
         <li><a href="#services">Services</a></li>
-        <li><a href="#stats">Impact</a></li>
+        <li><a href="#contact">Contact</a></li>
     </ul>
-    <a href="#contact" class="nav-cta">Secure Your Revenue</a>
+    <a href="#contact" class="nav-cta">Start Recovery</a>
 </nav>
 
+<!-- Hero Section -->
 <section id="hero">
-    <div class="hero-bg-text">AVIATION</div>
+    <div class="hero-container">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                <span>Advisory for Indian TMCs</span>
+            </div>
 
-    <div class="hero-logo-accent">
-        <img src="assets/volenzologoanimated.gif" alt="Volenzo" class="hero-logo-animated">
-    </div>
+            <h1 class="hero-h1">
+                <span class="h1-word">Your</span>
+                <span class="h1-word">agency</span>
+                <span class="h1-word">is</span>
+                <span class="h1-word">losing</span>
+                <span class="h1-word emphasis">₹15–25 lakhs</span>
+                <span class="h1-word">every</span>
+                <span class="h1-word">year.</span>
+            </h1>
 
-    <div class="plane-wrap">
-        <img src="assets/plane.png" alt="Volenzo Flight" class="plane-img">
-    </div>
+            <p class="hero-subtext">
+                While you're focused on bookings, airlines are raising ADMs, NDC channels are closing, and GDS income is evaporating.
+                <strong>We recover what's rightfully yours.</strong>
+            </p>
 
-    <div class="hero-content">
-        <div class="hero-tag">
-            <div class="tag-dot"></div>
-            <span class="tag-text">Elite Aviation Advisory · India</span>
+            <a href="#contact" class="btn-primary">Recover Your Revenue</a>
         </div>
-        <h1>Your agency is<br>losing money. <em>We find it.</em></h1>
-        <div class="hero-footer">
-            <p class="hero-p">Volenzo helps Indian TMCs recover lost revenue, navigate <strong class="bold-biggg">NDC</strong>, and protect <strong class="bold-biggg">GDS</strong> income through industry-first consulting.</p>
-        </div>
-    </div>
-</section>
 
-<section class="stats-sec" id="stats">
-    <div class="stats-grid">
-        <div class="stat-item">
-            <div class="stat-val" data-suffix="+">4000</div>
-            <div class="stat-label">IATA agencies in India navigating the <strong class="bold-biggg">NDC</strong> shift.</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-val" data-suffix="%">40</div>
-            <div class="stat-label">Domestic content now moved to <strong class="bold-biggg">NDC</strong>-only channels.</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-val" data-suffix="D">30</div>
-            <div class="stat-label">Window to challenge an <strong class="bold-biggg">ADM</strong> before it's lost.</div>
-        </div>
-        <div class="stat-item">
-            <div class="stat-val" data-suffix="B">45</div>
-            <div class="stat-label">Additional revenue from <strong class="bold-biggg">NDC</strong> retailing by 2030.</div>
+        <div class="hero-visual">
+            <img src="assets/plane.png" alt="Aircraft" class="plane" id="plane">
         </div>
     </div>
 </section>
 
-<section id="about">
+<!-- Problem Section -->
+<section id="problem">
     <div class="container">
-        <span class="sec-tag reveal">The Edge</span>
-        <div class="grid-2">
-            <div class="reveal">
-                <h2>India's only <em>agency-side</em> advisor.</h2>
+        <div class="section-header">
+            <h2>The Problem <em>Nobody Addresses</em></h2>
+            <p>These numbers affect your agency right now:</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-number" data-value="4000">0</div>
+                <p class="stat-text">IATA agencies in India navigating NDC without a strategy</p>
             </div>
-            <div class="reveal">
-                <p class="text-p">We sit on your side of the table. Founded with direct experience inside <strong>IndiGo Airlines and Accelya</strong> — the <strong class="bold-biggg">BSP</strong> settlement platform used by airlines globally.</p>
-                <p class="text-p">Every mid-sized Indian agency loses ₹15–25 lakhs annually in unchallenged <strong class="bold-biggg">ADMs</strong>. We stop the leaks.</p>
+            <div class="stat-box">
+                <div class="stat-number" data-value="40">0</div>
+                <span class="stat-percent">%</span>
+                <p class="stat-text">of domestic content now locked behind NDC-only channels</p>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" data-value="30">0</div>
+                <span class="stat-suffix">days</span>
+                <p class="stat-text">to challenge an ADM before the money is gone forever</p>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" data-value="45">0</div>
+                <span class="stat-suffix">B USD</span>
+                <p class="stat-text">in NDC retail revenue that should be yours by 2030</p>
+            </div>
+        </div>
+
+        <div class="problem-breakdown">
+            <div class="problem-item">
+                <h3>🔴 NDC Transition</h3>
+                <p>Airlines are pushing inventory away from GDS. Most agencies have no NDC strategy, losing margin on every booking that moves.</p>
+            </div>
+            <div class="problem-item">
+                <h3>🔴 ADM Deductions</h3>
+                <p>Undisputed ADMs cost you ₹15–25 lakhs annually. Airlines raise them silently. You lose money and have only 30 days to fight back.</p>
+            </div>
+            <div class="problem-item">
+                <h3>🔴 GDS Squeeze</h3>
+                <p>GDS income is under pressure. Airlines renegotiate PLBs in their favor. Passive agencies watch margins erode year-on-year.</p>
             </div>
         </div>
     </div>
 </section>
 
+<!-- Solution Section -->
+<section id="solution">
+    <div class="container">
+        <div class="section-header">
+            <h2>You Need <em>An Agency-Side Advisor</em></h2>
+            <p>Not another airline consultant. Not a tech vendor. Someone on your side of the table.</p>
+        </div>
+
+        <div class="solution-grid">
+            <div class="solution-card">
+                <div class="card-icon">✓</div>
+                <h3>Founded Inside the System</h3>
+                <p>Our founders worked at IndiGo Airlines and Accelya (the global BSP settlement platform). We understand airline operations and settlement mechanics better than anyone else in India.</p>
+            </div>
+
+            <div class="solution-card">
+                <div class="card-icon">✓</div>
+                <h3>Agency-Side Only</h3>
+                <p>We work exclusively for travel agencies. Never for airlines. This means our advice always favors your revenue recovery and margin protection.</p>
+            </div>
+
+            <div class="solution-card">
+                <div class="card-icon">✓</div>
+                <h3>Measurable Outcomes</h3>
+                <p>We don't do strategy theater. Our work generates concrete revenue recovery: unchallenged ADMs clawed back, NDC agreements renegotiated, GDS productivity optimized.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Services Section -->
+<section id="services">
+    <div class="container">
+        <div class="section-header">
+            <h2>How We Help</h2>
+            <p>Three core services, each addressing a specific revenue leak:</p>
+        </div>
+
+        <div class="services-grid">
+            <div class="service-card">
+                <h3>NDC Navigation</h3>
+                <p>We translate the IndiGo NDC mandate into a clear commercial strategy. Renegotiate agreements, fix booking flow gaps, and protect override income as GDS share shrinks.</p>
+                <ul class="service-list">
+                    <li>NDC contract review & renegotiation</li>
+                    <li>Multi-channel content strategy</li>
+                    <li>GDS-to-NDC migration planning</li>
+                </ul>
+            </div>
+
+            <div class="service-card">
+                <h3>ADM Defence</h3>
+                <p>Airlines raise ADMs without warning. We audit your BSP data, build dispute documentation, and challenge deductions within the critical 30-day window.</p>
+                <ul class="service-list">
+                    <li>ADM audit & reconciliation</li>
+                    <li>Dispute documentation & submission</li>
+                    <li>Recovery tracking</li>
+                </ul>
+            </div>
+
+            <div class="service-card">
+                <h3>GDS Optimization</h3>
+                <p>Your GDS contract is costing you more than it makes. We restructure PLBs, optimize incentives, and ensure you're capturing every percentage point of available income.</p>
+                <ul class="service-list">
+                    <li>GDS contract analysis</li>
+                    <li>Override & incentive optimization</li>
+                    <li>Volume forecasting & leverage</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
 <section id="contact">
     <div class="container">
-        <div class="grid-2">
-            <div class="reveal">
-                <span class="sec-tag">Contact</span>
-                <h2>Ready to recover <em>your revenue?</em></h2>
-                <p class="text-p" style="margin-top: 20px;">Secure your distribution future today. Our experts respond within 24 hours.</p>
+        <div class="contact-wrapper">
+            <div class="contact-content">
+                <h2>Ready to Stop the Bleeding?</h2>
+                <p>The longer you wait, the more revenue disappears. ADM windows close. NDC margins compress. We've helped agencies recover anywhere from ₹10 lakhs to ₹1+ crore in hidden revenue.</p>
+                <div class="contact-meta">
+                    <div><strong>Response time:</strong> Within 24 hours</div>
+                    <div><strong>Confidentiality:</strong> Complete</div>
+                    <div><strong>First call:</strong> Usually 30 minutes</div>
+                </div>
             </div>
-            <div class="contact-card reveal">
-                <form id="contact-form">
-                    <div class="form-group">
-                        <input type="text" id="name" required>
-                        <label for="name">Full Name</label>
-                    </div>
-                    <div class="form-group">
-                        <input type="email" id="email" required>
-                        <label for="email">Work Email</label>
-                    </div>
-                    <div class="form-group">
-                        <textarea id="message" required></textarea>
-                        <label for="message">How can we help?</label>
-                    </div>
-                    <button type="submit" class="submit-btn">Send Message</button>
-                </form>
-            </div>
+
+            <form id="contact-form" class="contact-form">
+                <div class="form-field">
+                    <input type="text" id="name" name="name" placeholder="Your Name" required>
+                </div>
+                <div class="form-field">
+                    <input type="email" id="email" name="email" placeholder="Work Email" required>
+                </div>
+                <div class="form-field">
+                    <textarea id="message" name="message" placeholder="What's your biggest revenue challenge?" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Start Recovery Conversation</button>
+                <p class="form-note">No sales pitch. Just a direct conversation with someone who understands your business.</p>
+            </form>
         </div>
     </div>
 </section>
+
+<!-- Footer -->
+<footer id="footer">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-col">
+                <img src="assets/volenzologo.png" alt="Volenzo" class="footer-logo">
+                <p>India's only agency-side aviation distribution advisor.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="#problem">The Problem</a></li>
+                    <li><a href="#solution">The Solution</a></li>
+                    <li><a href="#services">Services</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>About</h4>
+                <p>Founded by aviation industry insiders. Focused exclusively on agency-side revenue recovery.</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Volenzo Advisory. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
 
 <script src="script.js"></script>
 </body>
