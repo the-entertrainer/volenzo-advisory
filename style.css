@@ -85,24 +85,31 @@ button { font-family: inherit; }
     inset: 0;
     width: 100%; height: 100%;
     pointer-events: none;
-    z-index: 10;
+    z-index: 5;
 }
 
 #flight-wrapper {
     position: fixed;
-    z-index: 11;
+    z-index: 6;
     pointer-events: none;
     top: 0; left: 0;
     will-change: transform;
 }
 
 #flight-plane {
-    width: clamp(280px, 36vw, 560px);
+    width: clamp(200px, 26vw, 400px);
     height: auto;
     filter:
         drop-shadow(0 24px 48px rgba(0,0,0,.14))
         drop-shadow(0  4px 12px rgba(0,82,204,.08));
     display: block;
+    will-change: transform;
+    animation: planeFloat 4.8s ease-in-out infinite;
+}
+
+@keyframes planeFloat {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50%       { transform: translateY(-10px) rotate(-0.5deg); }
 }
 
 /* Sky cloud decorations */
@@ -222,7 +229,7 @@ button { font-family: inherit; }
     align-items: center; gap: 0;
 }
 
-.hero-copy { max-width: 580px; }
+.hero-copy { max-width: 580px; position: relative; z-index: 7; }
 
 .hero-kicker {
     font-size: 12px; font-weight: 600;
@@ -859,8 +866,7 @@ mark.hot-loss-inline {
     .form-row { grid-template-columns: 1fr; }
     .contact-form { padding: 28px 20px; }
 
-    #flight-plane { width: min(72vw, 280px); }
-    .sky-cloud { display: none; }
+    #flight-wrapper, #contrail-canvas, .sky-cloud { display: none; }
 
     #pain, #why-us, #services, #contact { padding: 80px 0; }
 }

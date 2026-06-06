@@ -179,22 +179,9 @@ ScrollTrigger.create({
 // Set initial position (before any scroll)
 applyFlight(0);
 
-// Floating micro-animation on plane in hero (before user scrolls)
-const floatTl = gsap.timeline({ repeat: -1, yoyo: true });
-floatTl.to(flightWrapper, {
-    y: '+=12', rotation: '-=1.5', duration: 3.2,
-    ease: 'sine.inOut',
-});
-
-// Pause float animation when scrolling (resume on idle)
-let scrollTimer = null;
-window.addEventListener('scroll', () => {
-    floatTl.pause();
-    clearTimeout(scrollTimer);
-    scrollTimer = setTimeout(() => {
-        if (window.scrollY < window.innerHeight * 0.15) floatTl.play();
-    }, 800);
-}, { passive: true });
+// Idle float lives entirely in CSS (planeFloat keyframes on #flight-plane),
+// keeping it on a child element so GSAP's scroll transform on #flight-wrapper
+// never conflicts with it.
 
 // Cloud parallax (slower than scroll for depth illusion)
 const cloudA = document.querySelector('.sky-cloud--a');
