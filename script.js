@@ -238,7 +238,7 @@ function init() {
                 fullScreen: { enable: false },
                 particles: {
                     number: { value: 32, density: { enable: true, area: 900 } },
-                    color: { value: ['#0052CC', '#1D6AE8', '#6480CC'] },
+                    color: { value: ['#1B2D5B', '#C8102E', '#7A6A52'] },
                     opacity: { value: { min: 0.05, max: 0.18 } },
                     size: { value: { min: 1, max: 2.5 } },
                     move: {
@@ -247,7 +247,7 @@ function init() {
                     },
                     links: {
                         enable: true, distance: 140,
-                        color: '#0052CC', opacity: 0.07, width: 1,
+                        color: '#1B2D5B', opacity: 0.05, width: 1,
                     },
                 },
                 interactivity: {
@@ -405,7 +405,7 @@ function init() {
     if (leakNum && has('RoughNotation') && !reduceMotion) {
         const annotation = RoughNotation.annotate(leakNum, {
             type: 'underline',
-            color: '#E63946',
+            color: '#C8102E',
             strokeWidth: 2.5,
             padding: 3,
             animate: true,
@@ -499,7 +499,7 @@ function init() {
 
 
     /* ── 22. PROGRESSBAR.js — animated metric bars ──────── */
-    const pbColors = ['#0052CC', '#1D6AE8', '#E63946'];
+    const pbColors = ['#1B2D5B', '#2A4080', '#C8102E'];
     [
         { id: 'mbar-1', pct: 0.92 },
         { id: 'mbar-2', pct: 0.72 },
@@ -531,7 +531,7 @@ function init() {
         if (!host || !has('ProgressBar')) return;
         const bar = new ProgressBar.Line(host, {
             strokeWidth: 6, trailWidth: 6,
-            color: '#0052CC', trailColor: '#E8EDFF',
+            color: '#1B2D5B', trailColor: '#E8D9BC',
             easing: 'easeInOut', duration: 1600,
         });
         const obs = new IntersectionObserver((entries) => {
