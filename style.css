@@ -3,7 +3,8 @@
 :root {
     --off-white: #F9F8F6;
     --deep-ink: #0A0A0A;
-    --muted-gold: #C4960A;
+    --brand-blue: #0052CC;
+    --brand-blue-light: #1565C0;
     --emerald: #059669;
     --glass: rgba(249, 248, 246, 0.8);
     --border: rgba(10, 10, 10, 0.08);
@@ -37,8 +38,9 @@ nav {
 }
 nav.scrolled { background: var(--glass); backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); height: 70px; }
 
-.logo { font-family: 'DM Serif Display', serif; font-size: 28px; text-decoration: none; color: var(--deep-ink); letter-spacing: -1px; }
-.logo span { font-style: italic; color: var(--muted-gold); }
+.logo-link { display: flex; align-items: center; text-decoration: none; height: 50px; }
+.logo-img { height: 50px; width: auto; transition: var(--transition); filter: drop-shadow(0 0 0 rgba(0, 82, 204, 0)); }
+.logo-link:hover .logo-img { filter: drop-shadow(0 0 8px rgba(0, 82, 204, 0.4)); }
 
 .nav-links { display: flex; gap: 40px; list-style: none; }
 .nav-links a { font-size: 14px; text-decoration: none; color: var(--text-mid); font-weight: 500; transition: color 0.3s; }
@@ -70,7 +72,7 @@ nav.scrolled { background: var(--glass); backdrop-filter: blur(20px); border-bot
     background: white; border: 1px solid var(--border);
     padding: 8px 20px; border-radius: 100px; margin-bottom: 40px;
 }
-.tag-dot { width: 8px; height: 8px; background: var(--emerald); border-radius: 50%; box-shadow: 0 0 12px var(--emerald); }
+.tag-dot { width: 8px; height: 8px; background: var(--brand-blue); border-radius: 50%; box-shadow: 0 0 12px var(--brand-blue); }
 .tag-text { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--text-mid); }
 
 h1 {
@@ -81,6 +83,14 @@ h1 em { font-style: italic; color: var(--text-mid); font-weight: 400; }
 
 .hero-footer { display: flex; align-items: flex-end; justify-content: space-between; gap: 100px; }
 .hero-p { font-size: 22px; color: var(--text-mid); max-width: 500px; font-weight: 300; line-height: 1.6; }
+
+/* ── HERO LOGO ACCENT ──────────────────────── */
+.hero-logo-accent {
+    position: absolute; right: 100px; bottom: 60px;
+    width: 280px; height: 280px; z-index: 3; pointer-events: none;
+    opacity: 0.15; filter: blur(0.5px);
+}
+.hero-logo-animated { width: 100%; height: 100%; object-fit: contain; }
 
 /* ── KINETIC PLANE ─────────────────────────── */
 .plane-wrap {
@@ -106,7 +116,7 @@ section { padding: 160px 80px; }
 .container { max-width: 1200px; margin: 0 auto; }
 
 .sec-header { margin-bottom: 100px; }
-.sec-tag { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; color: var(--muted-gold); margin-bottom: 20px; display: block; }
+.sec-tag { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 3px; color: var(--brand-blue); margin-bottom: 20px; display: block; }
 h2 { font-family: 'DM Serif Display', serif; font-size: 72px; line-height: 1; letter-spacing: -2px; }
 
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 120px; align-items: start; }
@@ -114,7 +124,7 @@ h2 { font-family: 'DM Serif Display', serif; font-size: 72px; line-height: 1; le
 
 .bold-biggg {
     font-family: 'DM Serif Display', serif; font-size: 1.1em; color: var(--deep-ink);
-    text-decoration: underline; text-decoration-color: var(--muted-gold); text-underline-offset: 6px;
+    text-decoration: underline; text-decoration-color: var(--brand-blue); text-underline-offset: 6px;
 }
 
 /* ── CONTACT FORM ──────────────────────────── */
