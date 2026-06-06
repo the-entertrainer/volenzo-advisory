@@ -231,20 +231,25 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
     position: relative; min-height: 100dvh;
     display: flex; align-items: center;
     overflow: hidden; padding-top: var(--nav-h);
-    /* Cinematic dusk sky — deep navy at zenith, atmospheric blue toward horizon */
+    /* Bright daytime sky with soft cloud-like atmosphere */
     background:
-        radial-gradient(ellipse 100% 60% at 50% 0%, rgba(14,52,140,0.55) 0%, transparent 65%),
-        radial-gradient(ellipse 70% 40% at 80% 20%, rgba(29,106,232,0.20) 0%, transparent 60%),
+        /* soft cloud wisps — scattered white radials at different positions */
+        radial-gradient(ellipse 55% 22% at 18% 28%, rgba(255,255,255,0.62) 0%, transparent 70%),
+        radial-gradient(ellipse 70% 18% at 78% 18%, rgba(255,255,255,0.50) 0%, transparent 65%),
+        radial-gradient(ellipse 45% 16% at 52% 40%, rgba(255,255,255,0.38) 0%, transparent 65%),
+        radial-gradient(ellipse 38% 14% at 8%  55%, rgba(255,255,255,0.30) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 12% at 90% 48%, rgba(255,255,255,0.28) 0%, transparent 60%),
+        /* sky base — deep blue at zenith fading to pale horizon */
         linear-gradient(
             180deg,
-            #02050F  0%,
-            #060D22 12%,
-            #0B1E52 28%,
-            #143480 44%,
-            #1B4DA8 58%,
-            #2E6DC0 72%,
-            #4D94D8 84%,
-            #7BBFF0 100%
+            #1A6AC8  0%,
+            #2478D8 14%,
+            #3A8EE6 28%,
+            #56A4EF 44%,
+            #78BCE8 60%,
+            #A8D8F8 76%,
+            #C8ECF8 88%,
+            #E0F4FF 100%
         );
 }
 #particles { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
@@ -422,7 +427,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 .cue-text { display: none; }
 .cue-line {
     width: 1px; height: 40px;
-    background: linear-gradient(to bottom, rgba(255,255,255,0.45), transparent);
+    background: linear-gradient(to bottom, rgba(10,30,80,0.40), transparent);
 }
 @keyframes cueDrop {
     0%, 100% { transform: translateX(-50%) translateY(0); opacity: 0.5; }
@@ -802,10 +807,9 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
     .hero-logo-hero {
         width: min(210px, 52vw);
         height: auto;
-        /* invert to white so it pops on the dark hero background */
-        filter: brightness(0) invert(1);
-        opacity: 0.92;
-        drop-shadow: 0 2px 16px rgba(0,82,204,0.4);
+        /* keep original colours — logo reads on bright sky bg */
+        filter: drop-shadow(0 2px 12px rgba(255,255,255,0.6));
+        opacity: 1;
     }
 
     /* Plane: occupies upper ~42dvh — full opacity, visible parallax star */
