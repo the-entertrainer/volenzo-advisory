@@ -79,9 +79,20 @@ body {
 body.loading { overflow: hidden; }
 img { display: block; max-width: 100%; }
 
-/* Hero logo — desktop nav has the logo; this one lives inside the hero for mobile */
+/* Hero logo — desktop nav has the logo; this big version is mobile-hero only */
 .hero-logo-wrap { display: none; }
-.hero-logo-hero { height: 34px; width: auto; display: block; }
+.hero-logo-hero { width: min(210px, 52vw); height: auto; display: block; }
+
+/* Mobile nav logo: hidden while hero is in view, JS adds .visible when scrolled past */
+@media (max-width: 1023px) {
+    .nav-logo-link {
+        opacity: 0; pointer-events: none;
+        transition: opacity 0.35s ease;
+    }
+    .nav-logo-link.nav-logo-visible {
+        opacity: 1; pointer-events: auto;
+    }
+}
 a { text-decoration: none; color: inherit; }
 ul { list-style: none; }
 button { cursor: pointer; border: none; background: none; font: inherit; }
@@ -764,14 +775,22 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
         position: relative;
     }
 
-    /* Logo at the top of the hero, centered */
+    /* Logo: big centrepiece at top of hero */
     .hero-logo-wrap {
         display: flex;
         justify-content: center;
         align-items: center;
         order: 1;
-        padding: 20px 0 0;
+        padding: 18px 0 0;
         flex-shrink: 0;
+    }
+    .hero-logo-hero {
+        width: min(210px, 52vw);
+        height: auto;
+        /* invert to white so it pops on the dark hero background */
+        filter: brightness(0) invert(1);
+        opacity: 0.92;
+        drop-shadow: 0 2px 16px rgba(0,82,204,0.4);
     }
 
     /* Plane: occupies upper ~42dvh — full opacity, visible parallax star */
