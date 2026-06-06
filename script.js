@@ -238,8 +238,8 @@ function init() {
                 fullScreen: { enable: false },
                 particles: {
                     number: { value: 32, density: { enable: true, area: 900 } },
-                    color: { value: ['#1B2D5B', '#C8102E', '#7A6A52'] },
-                    opacity: { value: { min: 0.05, max: 0.18 } },
+                    color: { value: ['rgba(255,255,255,0.8)', '#F5E642', '#E6002D'] },
+                    opacity: { value: { min: 0.04, max: 0.10 } },
                     size: { value: { min: 1, max: 2.5 } },
                     move: {
                         enable: true, speed: 0.4, direction: 'top-right',
@@ -247,7 +247,7 @@ function init() {
                     },
                     links: {
                         enable: true, distance: 140,
-                        color: '#1B2D5B', opacity: 0.05, width: 1,
+                        color: 'rgba(255,255,255,0.5)', opacity: 0.06, width: 1,
                     },
                 },
                 interactivity: {
@@ -340,6 +340,33 @@ function init() {
     }
 
 
+    /* ── HERO BG TEXT — oversized cycling advertising copy ── */
+    if (has('gsap') && !reduceMotion) {
+        const bgWords = [...document.querySelectorAll('.bg-word')];
+        if (bgWords.length) {
+            let bgIdx = 0;
+            gsap.set(bgWords[0], { opacity: 0.062, scale: 1 });
+
+            const cycleBg = () => {
+                const cur  = bgWords[bgIdx];
+                const next = bgWords[(bgIdx + 1) % bgWords.length];
+                gsap.to(cur, {
+                    opacity: 0, scale: 1.05, duration: 0.65, ease: 'power2.in',
+                    onComplete: () => {
+                        gsap.fromTo(next,
+                            { opacity: 0, scale: 0.96 },
+                            { opacity: 0.062, scale: 1, duration: 0.80, ease: 'power2.out' }
+                        );
+                        bgIdx = (bgIdx + 1) % bgWords.length;
+                    },
+                });
+            };
+
+            setInterval(cycleBg, 2200);
+        }
+    }
+
+
     /* ── 11. COUNTUP.js — animated numbers ─────────────── */
     function runCounter(el) {
         const end    = parseFloat(el.dataset.count);
@@ -405,7 +432,7 @@ function init() {
     if (leakNum && has('RoughNotation') && !reduceMotion) {
         const annotation = RoughNotation.annotate(leakNum, {
             type: 'underline',
-            color: '#C8102E',
+            color: '#F5E642',
             strokeWidth: 2.5,
             padding: 3,
             animate: true,
@@ -499,7 +526,7 @@ function init() {
 
 
     /* ── 22. PROGRESSBAR.js — animated metric bars ──────── */
-    const pbColors = ['#1B2D5B', '#2A4080', '#C8102E'];
+    const pbColors = ['#0D0D0D', '#0D0D0D', '#E6002D'];
     [
         { id: 'mbar-1', pct: 0.92 },
         { id: 'mbar-2', pct: 0.72 },
@@ -509,7 +536,7 @@ function init() {
         if (!host || !has('ProgressBar')) return;
         const bar = new ProgressBar.Line(host, {
             strokeWidth: 4, trailWidth: 2,
-            color: pbColors[i], trailColor: 'rgba(255,255,255,0.08)',
+            color: pbColors[i], trailColor: 'rgba(0,0,0,0.08)',
             easing: 'easeInOut', duration: 1800,
         });
         const obs = new IntersectionObserver((entries) => {
@@ -531,7 +558,7 @@ function init() {
         if (!host || !has('ProgressBar')) return;
         const bar = new ProgressBar.Line(host, {
             strokeWidth: 6, trailWidth: 6,
-            color: '#1B2D5B', trailColor: '#E8D9BC',
+            color: '#0D0D0D', trailColor: '#E4E4E2',
             easing: 'easeInOut', duration: 1600,
         });
         const obs = new IntersectionObserver((entries) => {
