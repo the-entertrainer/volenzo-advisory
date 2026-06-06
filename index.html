@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volenzo Advisory — Elite Aviation Distribution Consulting</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Geist:wght@200;300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- GSAP -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+
+<div class="cur" id="cur"></div>
+<div class="cur-ring" id="curR"></div>
+
+<!-- NAV -->
+<nav id="nav">
+    <a href="#hero" class="nav-logo">Volen<span>zo</span></a>
+    <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#services">Services</a></li>
+        <li><a href="#process">Process</a></li>
+        <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="#contact" class="nav-cta">Get in touch</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+    <div class="hero-bg-text">AVIATION</div>
+    
+    <div class="plane-container">
+        <img src="assets/plane.png" alt="Aviation Asset" class="plane-asset">
+    </div>
+
+    <div class="hero-inner">
+        <div class="hero-tag">
+            <div class="ht-dot"></div>
+            <div class="ht-txt">Elite Aviation Distribution Advisory</div>
+        </div>
+        <h1>Your agency is losing<br>money. <em>We find it.</em></h1>
+        <div class="hero-sub-row">
+            <p class="hero-p">Volenzo helps Indian travel agencies and TMCs recover lost revenue, navigate the <strong class="bold-biggg">NDC</strong> transition, and protect <strong class="bold-biggg">GDS</strong> income.</p>
+            <div class="hero-actions">
+                <a href="#contact" class="btn-cta">Book a free call <i data-lucide="arrow-right"></i></a>
+                <a href="#services" class="btn-link">Explore services</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- NUMBERS STRIP -->
+<div class="nums-strip">
+    <div class="nums-inner">
+        <div class="num-item">
+            <div class="ni-val"><span class="count" data-target="4000" data-suffix="+">0</span></div>
+            <div class="ni-label">IATA agencies in India navigating the <strong class="bold-biggg">NDC</strong> shift.</div>
+        </div>
+        <div class="num-item">
+            <div class="ni-val"><span class="count" data-target="40" data-suffix="%">0</span></div>
+            <div class="ni-label">Air India & IndiGo content now moved to <strong class="bold-biggg">NDC</strong>.</div>
+        </div>
+        <div class="num-item">
+            <div class="ni-val"><span class="count" data-target="30" data-suffix=" Days">0</span></div>
+            <div class="ni-label">Window to challenge an <strong class="bold-biggg">ADM</strong> before it's lost.</div>
+        </div>
+        <div class="num-item">
+            <div class="ni-val"><span class="count" data-target="45" data-prefix="$" data-suffix="B">0</span></div>
+            <div class="ni-label">Additional revenue from <strong class="bold-biggg">NDC</strong> retailing by 2030.</div>
+        </div>
+    </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+    <div class="about-inner">
+        <div class="sec-label reveal">About Volenzo</div>
+        <div class="about-layout">
+            <div class="about-l reveal">
+                <h2 class="about-h">India's only <em>agency-side</em> distribution advisor.</h2>
+                <p class="about-p">We sit on your side of the table. Founded with direct experience inside <strong>IndiGo Airlines and Accelya</strong> — the <strong class="bold-biggg">BSP</strong> settlement platform used by airlines globally.</p>
+                <div class="founder-row">
+                    <div class="fa">S</div>
+                    <div>
+                        <div class="fn">Sameer Hiwale</div>
+                        <div class="fr">Founder & Principal Advisor · Mumbai</div>
+                    </div>
+                </div>
+            </div>
+            <div class="about-r reveal">
+                <div class="ab">
+                    <p class="about-p">Every mid-sized Indian agency loses ₹15–25 lakhs annually in unchallenged <strong class="bold-biggg">ADMs</strong> and unclaimed <strong class="bold-biggg">GDS</strong> incentives. We find exactly where it's going.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+    <div class="contact-inner">
+        <div class="contact-layout">
+            <div class="reveal">
+                <h2 class="about-h">Ready to recover <em>your revenue?</em></h2>
+                <p class="about-p">Stop the leaks. Secure your distribution future today.</p>
+            </div>
+            <div class="cf reveal">
+                <h3 class="cf-h">Get a Free Audit</h3>
+                <p class="cf-sub">We'll respond within 24 hours.</p>
+                <form id="contact-form">
+                    <div class="ff">
+                        <input type="text" id="name" placeholder=" " required>
+                        <label for="name">Full Name</label>
+                    </div>
+                    <div class="ff">
+                        <input type="email" id="email" placeholder=" " required>
+                        <label for="email">Work Email</label>
+                    </div>
+                    <div class="ff">
+                        <textarea id="message" placeholder=" " required></textarea>
+                        <label for="message">How can we help?</label>
+                    </div>
+                    <button type="submit" class="cf-submit">Send Message</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="script.js"></script>
+<script>lucide.createIcons();</script>
+</body>
+</html>
