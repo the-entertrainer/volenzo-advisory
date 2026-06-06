@@ -238,7 +238,7 @@ function init() {
                 fullScreen: { enable: false },
                 particles: {
                     number: { value: 32, density: { enable: true, area: 900 } },
-                    color: { value: ['rgba(255,255,255,0.8)', '#F5E642', '#E6002D'] },
+                    color: { value: ['rgba(255,255,255,0.8)', '#0055FF', '#E6002D'] },
                     opacity: { value: { min: 0.04, max: 0.10 } },
                     size: { value: { min: 1, max: 2.5 } },
                     move: {
@@ -323,18 +323,17 @@ function init() {
                 scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1 },
             });
         } else {
-            /* Mobile: plane takes off — rises and fades as user scrolls down */
+            /* Mobile: plane takes off — climbs up-right and banks away as user scrolls */
+            const st = { trigger: '#hero', start: 'top top', end: '70% top', scrub: 2 };
             gsap.to('.hero-visual', {
-                yPercent: -70,
-                scale: 1.18,
-                opacity: 0,
-                ease: 'power2.in',
-                scrollTrigger: {
-                    trigger: '#hero',
-                    start: 'top top',
-                    end: '60% top',
-                    scrub: 1.5,
-                },
+                yPercent: -90, xPercent: 32,
+                opacity: 0, ease: 'none',
+                scrollTrigger: st,
+            });
+            /* banking tilt on the float wrapper for the "climbing" look */
+            gsap.to('.hero-visual .hero-float', {
+                rotate: -10, ease: 'none',
+                scrollTrigger: st,
             });
         }
     }
@@ -432,7 +431,7 @@ function init() {
     if (leakNum && has('RoughNotation') && !reduceMotion) {
         const annotation = RoughNotation.annotate(leakNum, {
             type: 'underline',
-            color: '#F5E642',
+            color: '#0055FF',
             strokeWidth: 2.5,
             padding: 3,
             animate: true,
