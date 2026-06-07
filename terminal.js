@@ -135,7 +135,7 @@ function cardHTML(c) {
 
 // DoF blur from distance between a tile's current z-depth and the focus plane
 function dofBlur(cardZ, focusZ) {
-    return Math.min(6.5, Math.abs(cardZ - focusZ) * 0.052);
+    return Math.min(3.0, Math.abs(cardZ - focusZ) * 0.026);
 }
 
 // Desktop static blur for far cards

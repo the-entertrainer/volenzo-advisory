@@ -16,7 +16,10 @@
 
 <!-- ═══════ PRELOADER ═══════ -->
 <div id="loader" aria-hidden="true">
-    <img src="assets/volenzologoanimated.gif" id="loader-logo" width="220" height="220" alt="">
+    <picture>
+        <source srcset="assets/volenzologoanimated.webp" type="image/webp">
+        <img src="assets/volenzologoanimated.gif" id="loader-logo" width="220" height="220" alt="">
+    </picture>
 </div>
 
 <!-- Scroll progress -->
@@ -25,7 +28,10 @@
 <!-- ═══════ NAVIGATION ═══════ -->
 <nav id="nav">
     <a href="#hero" class="nav-logo-link" data-scroll>
-        <img src="assets/volenzologo.png" alt="Volenzo Advisory" class="nav-logo">
+        <picture>
+            <source srcset="assets/volenzologo.webp" type="image/webp">
+            <img src="assets/volenzologo.png" alt="Volenzo Advisory" class="nav-logo">
+        </picture>
     </a>
     <ul class="nav-links">
         <li><a href="#problem" data-scroll data-micron="slide" data-micron-fill="#0055FF">The Problem</a></li>
@@ -101,8 +107,11 @@
                                 <div class="scene-glow" data-atropos-offset="-4" aria-hidden="true"></div>
                                 <div class="scene-blob scene-blob--a" data-atropos-offset="2" aria-hidden="true"></div>
                                 <div class="scene-blob scene-blob--b" data-atropos-offset="3" aria-hidden="true"></div>
-                                <img class="hero-plane" src="assets/plane.png"
-                                    alt="Commercial aircraft" data-atropos-offset="9">
+                                <picture>
+                                    <source srcset="assets/plane.webp" type="image/webp">
+                                    <img class="hero-plane" src="assets/plane.png"
+                                        alt="Commercial aircraft" data-atropos-offset="9">
+                                </picture>
                                 <div class="scene-tag scene-tag--adm" data-atropos-offset="6">
                                     <span class="tag-label">ADM challenged</span>
                                     <strong class="tag-val">+&#x20B9;8.4L</strong>
@@ -347,7 +356,10 @@
 <footer id="footer">
     <div class="container footer-row">
         <a href="#hero" data-scroll>
-            <img src="assets/volenzologo.png" alt="Volenzo Advisory" class="footer-logo">
+            <picture>
+                <source srcset="assets/volenzologo.webp" type="image/webp">
+                <img src="assets/volenzologo.png" alt="Volenzo Advisory" class="footer-logo">
+            </picture>
         </a>
         <nav class="footer-nav" aria-label="Footer navigation">
             <a href="#problem" data-scroll>The Problem</a>
