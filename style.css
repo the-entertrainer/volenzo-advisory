@@ -782,18 +782,27 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 .tcard {
     position: absolute;
     min-width: 155px; padding: 12px 16px;
-    background: rgba(255,255,255,0.14);
-    border: 1px solid rgba(0,55,180,0.16);
-    border-top: 2px solid rgba(0,55,180,0.30);
-    backdrop-filter: blur(6px) saturate(1.3);
-    -webkit-backdrop-filter: blur(6px) saturate(1.3);
-    box-shadow: 0 4px 24px rgba(0,55,180,0.08), inset 0 1px 0 rgba(255,255,255,0.45);
+    border: 1px solid rgba(0,55,180,0.18);
+    border-top: 2px solid rgba(0,55,180,0.35);
     border-radius: 2px;
-    transform: perspective(800px) translateZ(var(--tz,0px));
     will-change: transform;
 }
-.tcard--danger { border-top-color: rgba(212,28,44,0.50); }
-.tcard--blue   { border-top-color: rgba(0,85,255,0.50); }
+/* Near cards: crisp, fully opaque — front of the 3-D scene */
+.tcard--near {
+    background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(8px) saturate(1.4);
+    -webkit-backdrop-filter: blur(8px) saturate(1.4);
+    box-shadow: 0 8px 32px rgba(0,55,180,0.14), inset 0 1px 0 rgba(255,255,255,0.70);
+}
+/* Far cards: dimmer, softer — depth cue; DoF blur applied inline by JS */
+.tcard--far {
+    background: rgba(200,215,245,0.60);
+    backdrop-filter: blur(4px) saturate(1.1);
+    -webkit-backdrop-filter: blur(4px) saturate(1.1);
+    box-shadow: 0 4px 16px rgba(0,55,180,0.06), inset 0 1px 0 rgba(255,255,255,0.30);
+}
+.tcard--danger { border-top-color: rgba(212,28,44,0.55); }
+.tcard--blue   { border-top-color: rgba(0,85,255,0.55); }
 
 .tcard-label {
     font-family: var(--sans); font-size: 7.5px; font-weight: 700;

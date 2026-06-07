@@ -1,7 +1,8 @@
-// terminal.js — Floating financial data cards with live updates and 3D parallax
+// terminal.js — Floating financial data cards, true 3D depth + DoF blur
 
 import { gsap } from 'gsap';
 
+// tz > 0 = closer (sharp, opaque)   tz < 0 = further (blurred, dimmer)
 const CARDS = [
     {
         label: 'ADM RAISED',
@@ -9,8 +10,8 @@ const CARDS = [
         prefix: '-₹', suffix: 'L',
         meta: '6E-2847 · BOM-DEL',
         status: 'PENDING', type: 'danger',
-        pos: { left: '7%', top: '15%' },
-        tz: 28, rx: 4, ry: -8,
+        pos: { left: '2%', top: '10%' },
+        tz: 70, rx: 5, ry: -10,
         dur: 6.2, del: 0, interval: 4200,
     },
     {
@@ -19,8 +20,8 @@ const CARDS = [
         prefix: '₹', suffix: '/pax',
         meta: 'NDC vs GDS · 6E',
         status: 'NDC ONLY', type: 'warning',
-        pos: { right: '5%', top: '10%' },
-        tz: -22, rx: -3, ry: 10,
+        pos: { right: '2%', top: '22%' },
+        tz: -60, rx: -4, ry: 12,
         dur: 7.8, del: 1.2, interval: 3600,
     },
     {
@@ -29,8 +30,8 @@ const CARDS = [
         prefix: '-₹', suffix: 'L',
         meta: 'Q2 FY26 · Monthly',
         status: 'UNRECOVERED', type: 'danger',
-        pos: { left: '4%', top: '56%' },
-        tz: 12, rx: 3, ry: -5,
+        pos: { left: '3%', top: '54%' },
+        tz: 50, rx: 3, ry: -7,
         dur: 5.5, del: 2.4, interval: 5100,
     },
     {
@@ -39,8 +40,8 @@ const CARDS = [
         prefix: '+₹', suffix: 'L',
         meta: 'GDS Incentive · 1A',
         status: 'RENEWAL DUE', type: 'warning',
-        pos: { right: '3%', top: '48%' },
-        tz: -38, rx: -4, ry: 11,
+        pos: { right: '2%', top: '55%' },
+        tz: -85, rx: -5, ry: 14,
         dur: 6.8, del: 0.8, interval: 4800,
     },
     {
@@ -49,8 +50,8 @@ const CARDS = [
         prefix: '', suffix: ' days',
         meta: 'ADM #4471 · IndiGo',
         status: 'EXPIRING', type: 'warning',
-        pos: { left: '9%', bottom: '13%' },
-        tz: 18, rx: 2, ry: -6,
+        pos: { left: '4%', bottom: '10%' },
+        tz: 60, rx: 4, ry: -8,
         dur: 7.2, del: 1.6, interval: 6200,
     },
     {
@@ -59,13 +60,19 @@ const CARDS = [
         prefix: '₹', suffix: 'L/yr',
         meta: '3 active leaks',
         status: 'ACT NOW', type: 'blue',
-        pos: { right: '6%', bottom: '11%' },
-        tz: -12, rx: -3, ry: 9,
+        pos: { right: '3%', bottom: '8%' },
+        tz: -45, rx: -3, ry: 10,
         dur: 5.9, del: 2.0, interval: 5500,
     },
 ];
 
 const rndF = (a, b) => Math.random() * (b - a) + a;
+
+// Depth-of-field blur: back cards get more blur
+function depthBlur(tz) {
+    if (tz >= 0) return 0;
+    return Math.min(12, Math.round(Math.abs(tz) / 7));
+}
 
 export function initTerminal() {
     const hero = document.getElementById('hero');
@@ -80,9 +87,13 @@ export function initTerminal() {
 
     CARDS.forEach((data) => {
         const el = document.createElement('div');
-        el.className = `tcard tcard--${data.type}`;
+        const isNear = data.tz >= 0;
+        el.className = `tcard tcard--${data.type}${isNear ? ' tcard--near' : ' tcard--far'}`;
         Object.entries(data.pos).forEach(([k, v]) => (el.style[k] = v));
-        el.style.setProperty('--tz', data.tz + 'px');
+
+        // Apply depth-of-field blur to far cards via filter
+        const blur = depthBlur(data.tz);
+        if (blur > 0) el.style.filter = `blur(${blur}px)`;
 
         const fmt = (v) =>
             data.dec > 0
@@ -99,15 +110,19 @@ export function initTerminal() {
         wrap.appendChild(el);
         cardEls.push(el);
 
-        // Initial 3D tilt
-        gsap.set(el, { rotateX: data.rx, rotateY: data.ry, transformPerspective: 800, opacity: 0, y: 12 });
+        // GSAP owns all transforms — shared perspective from parent
+        const finalOpacity = isNear ? 1 : 0.55;
+        gsap.set(el, { z: data.tz, rotateX: data.rx, rotateY: data.ry, opacity: 0, y: 16 });
 
-        // Entrance fade-in
-        gsap.to(el, { opacity: 1, y: 0, duration: 0.8, delay: data.del + 0.4, ease: 'power2.out' });
-
-        // Continuous float bob
+        // Entrance
         gsap.to(el, {
-            y: `+=${9 + Math.random() * 5}`,
+            opacity: finalOpacity, y: 0,
+            duration: 0.9, delay: data.del + 0.5, ease: 'power2.out',
+        });
+
+        // Float bob (on top of GSAP z/rotate)
+        gsap.to(el, {
+            y: `+=${10 + Math.random() * 6}`,
             duration: data.dur,
             delay: data.del,
             ease: 'sine.inOut',
@@ -132,11 +147,10 @@ export function initTerminal() {
         setTimeout(tick, data.interval + data.del * 1000);
     });
 
-    // Mouse parallax — subtle 3D depth shift on cursor move
+    // Mouse parallax — near cards move more, far cards less (depth cue)
     if (window.matchMedia('(pointer:fine)').matches) {
         let pending = false;
         let mx = 0, my = 0;
-
         document.addEventListener('mousemove', (e) => {
             mx = (e.clientX / window.innerWidth  - 0.5) * 2;
             my = (e.clientY / window.innerHeight - 0.5) * 2;
@@ -146,10 +160,11 @@ export function initTerminal() {
                     pending = false;
                     cardEls.forEach((el, i) => {
                         const d = CARDS[i];
+                        const scale = d.tz >= 0 ? 1 : 0.4; // near cards respond more
                         gsap.to(el, {
-                            rotateX: d.rx + my * -5,
-                            rotateY: d.ry + mx * 7,
-                            duration: 1.4,
+                            rotateX: d.rx + my * -6 * scale,
+                            rotateY: d.ry + mx * 8 * scale,
+                            duration: 1.6,
                             ease: 'power2.out',
                             overwrite: 'auto',
                         });
