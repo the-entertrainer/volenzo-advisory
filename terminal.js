@@ -111,8 +111,8 @@ export function initTerminal() {
                 }
                 if (row.y < 0 || row.y > h + LINE_H) return;
                 ctx.fillStyle = row.alert
-                    ? 'rgba(212,28,44,0.11)'
-                    : 'rgba(0,55,180,0.065)';
+                    ? 'rgba(212,28,44,0.22)'
+                    : 'rgba(0,55,180,0.14)';
                 ctx.fillText(row.text, col.x, row.y);
             });
         });

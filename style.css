@@ -316,7 +316,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 .hero-plane {
     display: block; width: 100%; max-width: 440px; height: auto;
     object-fit: contain;
-    filter: drop-shadow(0 16px 48px rgba(0,55,180,0.18)) drop-shadow(0 4px 20px rgba(10,30,61,0.15));
+    filter: none;
     animation: planeBob 5s ease-in-out infinite;
     margin: auto; position: relative; z-index: 1;
 }
