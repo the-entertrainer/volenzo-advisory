@@ -3,6 +3,7 @@
 import { gsap } from 'gsap';
 
 // tz > 0 = closer (sharp, opaque)   tz < 0 = further (blurred, dimmer)
+// Near cards peek from the LEFT margin; far cards sit in the RIGHT margin
 const CARDS = [
     {
         label: 'ADM RAISED',
@@ -10,7 +11,7 @@ const CARDS = [
         prefix: '-₹', suffix: 'L',
         meta: '6E-2847 · BOM-DEL',
         status: 'PENDING', type: 'danger',
-        pos: { left: '2%', top: '10%' },
+        pos: { left: '-52px', top: '14%' },   // near — left-edge peek
         tz: 70, rx: 5, ry: -10,
         dur: 6.2, del: 0, interval: 4200,
     },
@@ -20,7 +21,7 @@ const CARDS = [
         prefix: '₹', suffix: '/pax',
         meta: 'NDC vs GDS · 6E',
         status: 'NDC ONLY', type: 'warning',
-        pos: { right: '2%', top: '22%' },
+        pos: { right: '-48px', top: '18%' },  // far — right-edge peek
         tz: -60, rx: -4, ry: 12,
         dur: 7.8, del: 1.2, interval: 3600,
     },
@@ -30,7 +31,7 @@ const CARDS = [
         prefix: '-₹', suffix: 'L',
         meta: 'Q2 FY26 · Monthly',
         status: 'UNRECOVERED', type: 'danger',
-        pos: { left: '3%', top: '54%' },
+        pos: { left: '-52px', top: '50%' },   // near — left-edge peek
         tz: 50, rx: 3, ry: -7,
         dur: 5.5, del: 2.4, interval: 5100,
     },
@@ -40,7 +41,7 @@ const CARDS = [
         prefix: '+₹', suffix: 'L',
         meta: 'GDS Incentive · 1A',
         status: 'RENEWAL DUE', type: 'warning',
-        pos: { right: '2%', top: '55%' },
+        pos: { right: '-48px', top: '55%' },  // far — right-edge peek
         tz: -85, rx: -5, ry: 14,
         dur: 6.8, del: 0.8, interval: 4800,
     },
@@ -50,7 +51,7 @@ const CARDS = [
         prefix: '', suffix: ' days',
         meta: 'ADM #4471 · IndiGo',
         status: 'EXPIRING', type: 'warning',
-        pos: { left: '4%', bottom: '10%' },
+        pos: { left: '-52px', bottom: '20%' }, // near — left-edge peek
         tz: 60, rx: 4, ry: -8,
         dur: 7.2, del: 1.6, interval: 6200,
     },
@@ -60,7 +61,7 @@ const CARDS = [
         prefix: '₹', suffix: 'L/yr',
         meta: '3 active leaks',
         status: 'ACT NOW', type: 'blue',
-        pos: { right: '3%', bottom: '8%' },
+        pos: { right: '-48px', bottom: '18%' }, // far — right-edge peek
         tz: -45, rx: -3, ry: 10,
         dur: 5.9, del: 2.0, interval: 5500,
     },
@@ -68,10 +69,10 @@ const CARDS = [
 
 const rndF = (a, b) => Math.random() * (b - a) + a;
 
-// Depth-of-field blur: back cards get more blur
+// Depth-of-field blur: subtle — far cards are readable, just softer
 function depthBlur(tz) {
     if (tz >= 0) return 0;
-    return Math.min(12, Math.round(Math.abs(tz) / 7));
+    return Math.min(5, Math.round(Math.abs(tz) / 16));
 }
 
 export function initTerminal() {
@@ -110,9 +111,9 @@ export function initTerminal() {
         wrap.appendChild(el);
         cardEls.push(el);
 
-        // GSAP owns all transforms — shared perspective from parent
-        const finalOpacity = isNear ? 1 : 0.55;
-        gsap.set(el, { z: data.tz, rotateX: data.rx, rotateY: data.ry, opacity: 0, y: 16 });
+        // transformPerspective makes tz produce a real scale difference per-element
+        const finalOpacity = isNear ? 1 : 0.78;
+        gsap.set(el, { z: data.tz, rotateX: data.rx, rotateY: data.ry, opacity: 0, y: 16, transformPerspective: 900 });
 
         // Entrance
         gsap.to(el, {
