@@ -270,32 +270,31 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
     .nav-logo-link.nav-logo-visible { opacity: 1; pointer-events: auto; }
 }
 
-/* ── Diagonal VOLENZO brand scroll — full hero, transparent ── */
+/* ── Horizontal CTA brand scroll — full hero, straight rows, transparent ── */
 .hero-brand-scroll {
     position: absolute; inset: 0;
-    background: transparent;          /* no box — same sky as hero */
+    background: transparent;
     overflow: hidden;
     pointer-events: none; z-index: 0;
+    display: flex; align-items: center; /* vertically center the row stack */
 }
 .brand-scroll-inner {
-    position: absolute;
-    width: 220%; left: -60%;          /* wide enough to fill corners after rotation */
-    top: 50%; transform: translateY(-50%) rotate(-13deg);
-    display: flex; flex-direction: column; gap: 18px;
+    display: flex; flex-direction: column; gap: 16px;
+    width: 100%;
 }
 .brand-track {
     display: flex; align-items: center; gap: 28px;
     width: max-content; white-space: nowrap;
 }
-.brand-track--1 { animation: brand-left  14s linear infinite; }
-.brand-track--2 { animation: brand-right 18s linear infinite; }
+.brand-track--1 { animation: brand-left  16s linear infinite; }
+.brand-track--2 { animation: brand-right 22s linear infinite; }
 .brand-track span {
     font-family: var(--display);
     font-size: clamp(56px, 8vw, 100px); line-height: 1;
-    color: rgba(0,55,180,0.10);
+    color: rgba(0,55,180,0.09);
     letter-spacing: 0.04em; text-transform: uppercase; user-select: none;
 }
-.brand-dot { font-size: 0.55em !important; color: rgba(0,55,180,0.06) !important; }
+.brand-dot { font-size: 0.55em !important; color: rgba(0,55,180,0.05) !important; }
 @keyframes brand-left  { 0% { transform: translateX(0); }    100% { transform: translateX(-50%); } }
 @keyframes brand-right { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
 @media (prefers-reduced-motion: reduce) { .brand-track { animation-play-state: paused; } }
@@ -527,8 +526,6 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 .svc-card:hover                       { background: var(--blue); }
 .svc-card:hover .svc-name             { color: var(--white); }
 .svc-card:hover .svc-desc             { color: rgba(255,255,255,0.60); }
-.svc-card:hover .svc-recovery         { color: var(--white); }
-.svc-card:hover .svc-recovery span    { color: rgba(255,255,255,0.50); }
 .svc-card:hover .svc-footer           { border-top-color: rgba(255,255,255,0.18); }
 .svc-card:hover .svc-bar-host         { background: rgba(255,255,255,0.18); }
 .svc-card:hover .svc-icon-svg         { color: var(--white); }
@@ -539,8 +536,6 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 }
 .svc-card--featured .svc-name         { color: var(--white); }
 .svc-card--featured .svc-desc         { color: rgba(255,255,255,0.60); }
-.svc-card--featured .svc-recovery     { color: var(--white); }
-.svc-card--featured .svc-recovery span{ color: rgba(255,255,255,0.50); }
 .svc-card--featured .svc-footer       { border-top-color: rgba(255,255,255,0.18); }
 .svc-card--featured .svc-bar-host     { background: rgba(255,255,255,0.18); }
 .svc-card--featured .svc-icon-svg     { color: var(--white); }
@@ -556,19 +551,9 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 }
 .svc-desc { font-size: 14px; color: var(--muted); line-height: 1.65; flex: 1; transition: color var(--trans); }
 .svc-footer {
-    margin-top: auto; padding-top: 16px;
+    margin-top: auto; padding-top: 20px;
     border-top: 1px solid var(--border);
     transition: border-color var(--trans);
-}
-.svc-recovery {
-    font-family: var(--display); font-size: 30px;
-    color: var(--ink); margin-bottom: 10px;
-    letter-spacing: 0.01em; transition: color var(--trans);
-}
-.svc-recovery span {
-    font-family: var(--sans); font-size: 12px;
-    color: var(--muted); font-weight: 600; letter-spacing: 0.08em;
-    transition: color var(--trans);
 }
 .svc-bar-host { height: 2px; background: var(--sky-deep); overflow: hidden; border-radius: 0; transition: background var(--trans); }
 
