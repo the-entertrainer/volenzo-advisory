@@ -831,23 +831,13 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 .tcard-status--blue    { background: rgba(0,85,255,0.10);  color: rgba(0,85,255,0.90);  border: 1px solid rgba(0,85,255,0.26); }
 
 @media (max-width: 1023px) {
+    /* Tablet: limit to 2 cards via CSS */
     .tcard:nth-child(n+3) { display: none; }
     .tcard { min-width: 130px; padding: 9px 12px; }
     .tcard-value { font-size: 24px; }
 }
 @media (max-width: 600px) {
-    /* Cards sit inside the plane zone (top ~45% of hero) behind the plane PNG */
-    .tcard:nth-child(1) {
-        left: 6px !important; right: unset !important;
-        top: 11% !important; bottom: unset !important;
-    }
-    .tcard:nth-child(2) {
-        display: block !important;
-        right: 6px !important; left: unset !important;
-        top: 26% !important; bottom: unset !important;
-        filter: blur(2px) !important;
-    }
-    .tcard:nth-child(n+3) { display: none !important; }
-    .tcard { min-width: 115px; padding: 8px 10px; }
-    .tcard-value { font-size: 20px; }
+    /* Mobile: JS controls all 6 — positions set inline, just resize here */
+    .tcard { display: block !important; min-width: 112px; padding: 8px 10px; }
+    .tcard-value { font-size: 19px; }
 }
