@@ -238,8 +238,8 @@ function init() {
                 fullScreen: { enable: false },
                 particles: {
                     number: { value: 32, density: { enable: true, area: 900 } },
-                    color: { value: ['rgba(255,255,255,0.8)', '#0055FF', '#E6002D'] },
-                    opacity: { value: { min: 0.04, max: 0.10 } },
+                    color: { value: ['#0055FF', '#1A3A6B', '#D41C2C'] },
+                    opacity: { value: { min: 0.06, max: 0.18 } },
                     size: { value: { min: 1, max: 2.5 } },
                     move: {
                         enable: true, speed: 0.4, direction: 'top-right',
@@ -247,7 +247,7 @@ function init() {
                     },
                     links: {
                         enable: true, distance: 140,
-                        color: 'rgba(255,255,255,0.5)', opacity: 0.06, width: 1,
+                        color: '#1A3A6B', opacity: 0.08, width: 1,
                     },
                 },
                 interactivity: {
@@ -498,7 +498,7 @@ function init() {
 
 
     /* ── 22. PROGRESSBAR.js — animated metric bars ──────── */
-    const pbColors = ['#0D0D0D', '#0D0D0D', '#E6002D'];
+    const pbColors = ['#1A3A6B', '#0055FF', '#D41C2C'];
     [
         { id: 'mbar-1', pct: 0.92 },
         { id: 'mbar-2', pct: 0.72 },
@@ -508,7 +508,7 @@ function init() {
         if (!host || !has('ProgressBar')) return;
         const bar = new ProgressBar.Line(host, {
             strokeWidth: 4, trailWidth: 2,
-            color: pbColors[i], trailColor: 'rgba(0,0,0,0.08)',
+            color: pbColors[i], trailColor: 'rgba(0,55,180,0.10)',
             easing: 'easeInOut', duration: 1800,
         });
         const obs = new IntersectionObserver((entries) => {
@@ -530,7 +530,7 @@ function init() {
         if (!host || !has('ProgressBar')) return;
         const bar = new ProgressBar.Line(host, {
             strokeWidth: 6, trailWidth: 6,
-            color: '#0D0D0D', trailColor: '#E4E4E2',
+            color: '#0055FF', trailColor: 'rgba(0,55,180,0.12)',
             easing: 'easeInOut', duration: 1600,
         });
         const obs = new IntersectionObserver((entries) => {
