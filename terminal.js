@@ -1,138 +1,163 @@
-// Bloomberg Terminal backdrop — scrolling BSP/GDS/ADM data canvas
+// terminal.js — Floating financial data cards with live updates and 3D parallax
 
-const AIRLINES  = ['6E','AI','SG','UK','2I','QP','IX','G8'];
-const ROUTES    = ['BOM-DEL','DEL-BLR','BLR-HYD','HYD-MAA','BOM-CCU','DEL-MAA','AMD-BOM','CCU-DEL','PNQ-BLR','VTZ-MAA','BBI-DEL','IXC-BOM'];
-const FARE_CLS  = ['Y','B','H','K','M','L','V','S','N','Q','O','G','W','E'];
-const STATUSES  = ['PENDING','CLEARED','EXPIRED','REVIEWED','FILED','LAPSED'];
-const GDS_LIST  = ['SABRE','AMADEUS','GALILEO','WORLDSPAN'];
-const MONTHS    = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+import { gsap } from 'gsap';
 
-const rnd   = (a) => a[Math.floor(Math.random() * a.length)];
-const rndI  = (a, b) => Math.floor(Math.random() * (b - a + 1)) + a;
-const rndF  = (a, b) => (Math.random() * (b - a) + a).toFixed(1);
-const bsp   = () => 'BSP-' + Math.random().toString(36).slice(2, 9).toUpperCase();
-const adm   = () => `ADM/${rndI(1000,9999)}/${rndI(24,26)}`;
-const amt   = () => `₹${rndF(0.5, 13.5)}L`;
-const pad   = (s, n) => String(s).padEnd(n);
+const CARDS = [
+    {
+        label: 'ADM RAISED',
+        value: 8.4,  range: [3.2, 14.5], dec: 1,
+        prefix: '-₹', suffix: 'L',
+        meta: '6E-2847 · BOM-DEL',
+        status: 'PENDING', type: 'danger',
+        pos: { left: '7%', top: '15%' },
+        tz: 28, rx: 4, ry: -8,
+        dur: 6.2, del: 0, interval: 4200,
+    },
+    {
+        label: 'FARE MISSED',
+        value: 1240, range: [820, 2100], dec: 0,
+        prefix: '₹', suffix: '/pax',
+        meta: 'NDC vs GDS · 6E',
+        status: 'NDC ONLY', type: 'warning',
+        pos: { right: '5%', top: '10%' },
+        tz: -22, rx: -3, ry: 10,
+        dur: 7.8, del: 1.2, interval: 3600,
+    },
+    {
+        label: 'BSP VARIANCE',
+        value: 3.2,  range: [1.4, 6.8], dec: 1,
+        prefix: '-₹', suffix: 'L',
+        meta: 'Q2 FY26 · Monthly',
+        status: 'UNRECOVERED', type: 'danger',
+        pos: { left: '4%', top: '56%' },
+        tz: 12, rx: 3, ry: -5,
+        dur: 5.5, del: 2.4, interval: 5100,
+    },
+    {
+        label: 'OVERRIDE AT RISK',
+        value: 4.8,  range: [2.0, 7.5], dec: 1,
+        prefix: '+₹', suffix: 'L',
+        meta: 'GDS Incentive · 1A',
+        status: 'RENEWAL DUE', type: 'warning',
+        pos: { right: '3%', top: '48%' },
+        tz: -38, rx: -4, ry: 11,
+        dur: 6.8, del: 0.8, interval: 4800,
+    },
+    {
+        label: 'ADM WINDOW',
+        value: 22,   range: [8, 28], dec: 0,
+        prefix: '', suffix: ' days',
+        meta: 'ADM #4471 · IndiGo',
+        status: 'EXPIRING', type: 'warning',
+        pos: { left: '9%', bottom: '13%' },
+        tz: 18, rx: 2, ry: -6,
+        dur: 7.2, del: 1.6, interval: 6200,
+    },
+    {
+        label: 'RECOVERABLE',
+        value: 25,   range: [18, 32], dec: 0,
+        prefix: '₹', suffix: 'L/yr',
+        meta: '3 active leaks',
+        status: 'ACT NOW', type: 'blue',
+        pos: { right: '6%', bottom: '11%' },
+        tz: -12, rx: -3, ry: 9,
+        dur: 5.9, del: 2.0, interval: 5500,
+    },
+];
 
-function genRow(colType) {
-    const al = rnd(AIRLINES);
-    const flt = `${al}-${rndI(100,9999)}`;
-    const rt  = rnd(ROUTES);
-    const fc  = rnd(FARE_CLS);
-    switch (colType) {
-        case 0: return `${pad(flt,9)} ${pad(rt,10)} ${fc}  ${pad(bsp(),14)} ${amt()}`;
-        case 1: return `${pad(adm(),15)} ${al}  ${pad(rt,10)} ${pad(amt(),9)} ${rnd(FARE_CLS)}`;
-        case 2: return `${pad(bsp(),14)} ${rndI(1,28)} ${rnd(MONTHS)} ${pad(rt,10)} ${rnd(STATUSES)}`;
-        case 3: return `${pad(rnd(GDS_LIST),10)} PLB ${rndF(0.5,4.2)}%  ${pad(rt,10)} ${flt}`;
-    }
-}
+const rndF = (a, b) => Math.random() * (b - a) + a;
 
 export function initTerminal() {
     const hero = document.getElementById('hero');
     if (!hero || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    const canvas = document.createElement('canvas');
-    canvas.id = 'terminal-canvas';
-    canvas.setAttribute('aria-hidden', 'true');
-    hero.prepend(canvas);
+    const wrap = document.createElement('div');
+    wrap.className = 'terminal-cards';
+    wrap.setAttribute('aria-hidden', 'true');
+    hero.prepend(wrap);
 
-    const ctx = canvas.getContext('2d');
-    const dpr = window.devicePixelRatio || 1;
-    const LINE_H   = 20;
-    const FONT_SZ  = 10;
-    const FONT     = `${FONT_SZ}px 'Courier New', Courier, monospace`;
-    const SPEEDS   = [0.022, 0.015, 0.019, 0.012]; // px per ms
+    const cardEls = [];
 
-    let cols = [];
-    let rafId = null;
-    let lastTs = null;
+    CARDS.forEach((data) => {
+        const el = document.createElement('div');
+        el.className = `tcard tcard--${data.type}`;
+        Object.entries(data.pos).forEach(([k, v]) => (el.style[k] = v));
+        el.style.setProperty('--tz', data.tz + 'px');
 
-    function buildCols() {
-        const w = hero.offsetWidth;
-        const h = hero.offsetHeight;
-        const colW = Math.floor(w / 4);
-        cols = Array.from({ length: 4 }, (_, i) => {
-            const n = Math.ceil(h / LINE_H) + 10;
-            return {
-                x: i * colW + 10,
-                speed: SPEEDS[i],
-                type: i,
-                rows: Array.from({ length: n }, (_, j) => ({
-                    text: genRow(i),
-                    y: j * LINE_H + LINE_H,
-                    alert: Math.random() < 0.035,
-                })),
-            };
+        const fmt = (v) =>
+            data.dec > 0
+                ? v.toFixed(data.dec)
+                : Math.round(v).toLocaleString('en-IN');
+
+        el.innerHTML = `
+            <div class="tcard-label">${data.label}</div>
+            <div class="tcard-value">${data.prefix}<span class="tcard-num">${fmt(data.value)}</span>${data.suffix}</div>
+            <div class="tcard-meta">${data.meta}</div>
+            <span class="tcard-status tcard-status--${data.type}">${data.status}</span>
+        `;
+
+        wrap.appendChild(el);
+        cardEls.push(el);
+
+        // Initial 3D tilt
+        gsap.set(el, { rotateX: data.rx, rotateY: data.ry, transformPerspective: 800, opacity: 0, y: 12 });
+
+        // Entrance fade-in
+        gsap.to(el, { opacity: 1, y: 0, duration: 0.8, delay: data.del + 0.4, ease: 'power2.out' });
+
+        // Continuous float bob
+        gsap.to(el, {
+            y: `+=${9 + Math.random() * 5}`,
+            duration: data.dur,
+            delay: data.del,
+            ease: 'sine.inOut',
+            yoyo: true,
+            repeat: -1,
         });
-    }
 
-    function resize() {
-        const w = hero.offsetWidth;
-        const h = hero.offsetHeight;
-        canvas.style.width  = w + 'px';
-        canvas.style.height = h + 'px';
-        canvas.width  = Math.round(w * dpr);
-        canvas.height = Math.round(h * dpr);
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-
-    function init() {
-        resize();
-        buildCols();
-    }
-    init();
-
-    let resizeTimer;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => { init(); }, 150);
-    }, { passive: true });
-
-    function frame(ts) {
-        if (!lastTs) lastTs = ts;
-        const dt = Math.min(ts - lastTs, 50);
-        lastTs = ts;
-
-        const w = hero.offsetWidth;
-        const h = hero.offsetHeight;
-        ctx.clearRect(0, 0, w, h);
-        ctx.font = FONT;
-        ctx.textBaseline = 'alphabetic';
-
-        cols.forEach(col => {
-            col.rows.forEach(row => {
-                row.y -= col.speed * dt;
-                if (row.y < -LINE_H) {
-                    const maxY = col.rows.reduce((m, r) => Math.max(m, r.y), 0);
-                    row.y     = maxY + LINE_H;
-                    row.text  = genRow(col.type);
-                    row.alert = Math.random() < 0.035;
-                }
-                if (row.y < 0 || row.y > h + LINE_H) return;
-                ctx.fillStyle = row.alert
-                    ? 'rgba(212,28,44,0.22)'
-                    : 'rgba(0,55,180,0.14)';
-                ctx.fillText(row.text, col.x, row.y);
+        // Live value ticker
+        const tick = () => {
+            const numEl = el.querySelector('.tcard-num');
+            if (!numEl) return;
+            const target = rndF(data.range[0], data.range[1]);
+            const cur = { v: parseFloat(numEl.textContent.replace(/,/g, '')) };
+            gsap.to(cur, {
+                v: target,
+                duration: 1.4,
+                ease: 'power2.inOut',
+                onUpdate() { numEl.textContent = fmt(cur.v); },
+                onComplete() { setTimeout(tick, data.interval + rndF(-600, 600)); },
             });
-        });
+        };
+        setTimeout(tick, data.interval + data.del * 1000);
+    });
 
-        rafId = requestAnimationFrame(frame);
+    // Mouse parallax — subtle 3D depth shift on cursor move
+    if (window.matchMedia('(pointer:fine)').matches) {
+        let pending = false;
+        let mx = 0, my = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mx = (e.clientX / window.innerWidth  - 0.5) * 2;
+            my = (e.clientY / window.innerHeight - 0.5) * 2;
+            if (!pending) {
+                pending = true;
+                requestAnimationFrame(() => {
+                    pending = false;
+                    cardEls.forEach((el, i) => {
+                        const d = CARDS[i];
+                        gsap.to(el, {
+                            rotateX: d.rx + my * -5,
+                            rotateY: d.ry + mx * 7,
+                            duration: 1.4,
+                            ease: 'power2.out',
+                            overwrite: 'auto',
+                        });
+                    });
+                });
+            }
+        }, { passive: true });
     }
 
-    const io = new IntersectionObserver(([entry]) => {
-        if (entry.isIntersecting) {
-            lastTs = null;
-            if (!rafId) rafId = requestAnimationFrame(frame);
-        } else {
-            if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
-        }
-    }, { threshold: 0 });
-    io.observe(hero);
-
-    return () => {
-        cancelAnimationFrame(rafId);
-        io.disconnect();
-        canvas.remove();
-    };
+    return () => wrap.remove();
 }
