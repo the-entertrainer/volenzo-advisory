@@ -339,33 +339,6 @@ function init() {
     }
 
 
-    /* ── HERO BG TEXT — oversized cycling advertising copy ── */
-    if (has('gsap') && !reduceMotion) {
-        const bgWords = [...document.querySelectorAll('.bg-word')];
-        if (bgWords.length) {
-            let bgIdx = 0;
-            gsap.set(bgWords[0], { opacity: 0.062, scale: 1 });
-
-            const cycleBg = () => {
-                const cur  = bgWords[bgIdx];
-                const next = bgWords[(bgIdx + 1) % bgWords.length];
-                gsap.to(cur, {
-                    opacity: 0, scale: 1.05, duration: 0.65, ease: 'power2.in',
-                    onComplete: () => {
-                        gsap.fromTo(next,
-                            { opacity: 0, scale: 0.96 },
-                            { opacity: 0.062, scale: 1, duration: 0.80, ease: 'power2.out' }
-                        );
-                        bgIdx = (bgIdx + 1) % bgWords.length;
-                    },
-                });
-            };
-
-            setInterval(cycleBg, 2200);
-        }
-    }
-
-
     /* ── 11. COUNTUP.js — animated numbers ─────────────── */
     function runCounter(el) {
         const end    = parseFloat(el.dataset.count);
