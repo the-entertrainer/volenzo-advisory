@@ -105,20 +105,6 @@ function init() {
     window.addEventListener('scroll', onScrollNav, { passive: true });
     onScrollNav();
 
-    /* Mobile: hide nav logo while hero is in view; show it after scrolling past */
-    if (isMobile) {
-        const navLogoLink = document.querySelector('.nav-logo-link');
-        const heroSection = document.getElementById('hero');
-        if (navLogoLink && heroSection) {
-            const heroLogoObs = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    navLogoLink.classList.toggle('nav-logo-visible', !entry.isIntersecting);
-                });
-            }, { threshold: 0.15 });
-            heroLogoObs.observe(heroSection);
-        }
-    }
-
     function openMenu() {
         burger.classList.add('open');
         overlay.classList.add('open');

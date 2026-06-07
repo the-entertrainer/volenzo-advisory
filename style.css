@@ -264,10 +264,9 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
     filter: brightness(0) saturate(100%) invert(15%) sepia(60%) saturate(500%) hue-rotate(200deg);
 }
 
-/* Mobile: hide nav logo while hero in view */
+/* Mobile: nav logo always visible */
 @media (max-width: 1023px) {
-    .nav-logo-link { opacity: 0; pointer-events: none; transition: opacity 0.35s ease; }
-    .nav-logo-link.nav-logo-visible { opacity: 1; pointer-events: auto; }
+    .nav-logo-link { opacity: 1; pointer-events: auto; }
 }
 
 /* ── Horizontal CTA brand scroll — full hero, straight rows, transparent ── */
@@ -698,16 +697,12 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
         padding-inline: 18px; min-height: 100dvh;
         align-items: stretch; gap: 0; position: relative;
     }
-    .hero-logo-wrap {
-        display: flex; justify-content: center; align-items: center;
-        order: 1; padding: 20px 0 0; flex-shrink: 0;
-    }
     .hero-visual {
-        order: 2;
+        order: 1;
         position: relative !important; inset: unset !important; opacity: 1 !important;
         pointer-events: none; display: flex !important;
         align-items: center; justify-content: center;
-        flex: 0 0 42dvh; width: 100%; z-index: 1 !important; overflow: hidden;
+        flex: 0 0 48dvh; width: 100%; z-index: 1 !important; overflow: hidden;
     }
     .atropos, .atropos-scaler, .atropos-rotate { overflow: hidden !important; }
     .hero-visual .hero-float { width: 82vw; max-width: 340px; }
@@ -717,7 +712,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
         border: none !important; box-shadow: none !important; padding: 0 !important;
     }
     .hero-copy {
-        order: 3; position: relative !important; z-index: 2;
+        order: 2; position: relative !important; z-index: 2;
         max-width: 100%; margin-top: 16px; gap: 18px;
     }
     .hero-h1 { font-size: clamp(42px, 11vw, 72px); line-height: 0.88; }
