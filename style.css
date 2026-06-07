@@ -270,37 +270,41 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
     .nav-logo-link.nav-logo-visible { opacity: 1; pointer-events: auto; }
 }
 
-/* ── Hero visual — sky-blue panel with brand scroll ─── */
-.hero-visual {
-    display: flex; align-items: center; justify-content: center;
-    position: relative;
-}
-
+/* ── Diagonal VOLENZO brand scroll — full hero, transparent ── */
 .hero-brand-scroll {
     position: absolute; inset: 0;
-    background: var(--sky-deep);
+    background: transparent;          /* no box — same sky as hero */
     overflow: hidden;
-    display: flex; flex-direction: column;
-    justify-content: center; gap: 8px;
     pointer-events: none; z-index: 0;
+}
+.brand-scroll-inner {
+    position: absolute;
+    width: 220%; left: -60%;          /* wide enough to fill corners after rotation */
+    top: 50%; transform: translateY(-50%) rotate(-13deg);
+    display: flex; flex-direction: column; gap: 18px;
 }
 .brand-track {
     display: flex; align-items: center; gap: 28px;
-    width: max-content; white-space: nowrap; padding-block: 4px;
+    width: max-content; white-space: nowrap;
 }
 .brand-track--1 { animation: brand-left  14s linear infinite; }
 .brand-track--2 { animation: brand-right 18s linear infinite; }
 .brand-track span {
     font-family: var(--display);
-    font-size: 88px; line-height: 1;
-    color: rgba(0,55,180,0.11);
+    font-size: clamp(56px, 8vw, 100px); line-height: 1;
+    color: rgba(0,55,180,0.10);
     letter-spacing: 0.04em; text-transform: uppercase; user-select: none;
 }
-.brand-dot { font-size: 44px !important; color: rgba(0,55,180,0.07) !important; }
+.brand-dot { font-size: 0.55em !important; color: rgba(0,55,180,0.06) !important; }
 @keyframes brand-left  { 0% { transform: translateX(0); }    100% { transform: translateX(-50%); } }
 @keyframes brand-right { 0% { transform: translateX(-50%); } 100% { transform: translateX(0); } }
 @media (prefers-reduced-motion: reduce) { .brand-track { animation-play-state: paused; } }
 
+/* ── Hero visual ────────────────────────────────────────── */
+.hero-visual {
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+}
 .hero-float { width: 100%; transform-style: preserve-3d; position: relative; z-index: 1; }
 #hero-atropos { width: 100%; max-width: 520px; }
 
