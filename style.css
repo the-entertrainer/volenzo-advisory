@@ -174,7 +174,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 .hero-cloud { display: none; }
 
 .hero-inner {
-    position: relative; z-index: 1;
+    position: relative; z-index: 2;
     display: grid; grid-template-columns: 1fr 1fr;
     align-items: center; gap: 40px;
     width: 100%; max-width: 1180px;
@@ -777,7 +777,7 @@ button { cursor: pointer; border: none; background: none; font: inherit; }
 /* ── Floating financial data cards backdrop ──────────────── */
 .terminal-cards {
     position: absolute; inset: 0;
-    pointer-events: none; z-index: 0; overflow: hidden;
+    pointer-events: none; z-index: 1; overflow: visible;
 }
 .tcard {
     position: absolute;
