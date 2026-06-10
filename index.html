@@ -9,56 +9,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <script type="module" src="/main.js"></script>
 </head>
-<body class="loading">
-
-<!-- ═══════ PRELOADER ═══════ -->
-<div id="loader" aria-hidden="true">
-    <picture>
-        <source srcset="assets/volenzologoanimated.webp" type="image/webp">
-        <img src="assets/volenzologoanimated.gif" id="loader-logo" width="220" height="220" alt="">
-    </picture>
-</div>
-
-<!-- Scroll progress -->
-<div id="scroll-progress" aria-hidden="true"></div>
-
-<!-- ═══════ NAVIGATION ═══════ -->
-<nav id="nav">
-    <a href="#hero" class="nav-logo-link" data-scroll>
-        <picture>
-            <source srcset="assets/volenzologo.webp" type="image/webp">
-            <img src="assets/volenzologo.png" alt="Volenzo Advisory" class="nav-logo">
-        </picture>
-    </a>
-    <ul class="nav-links">
-        <li><a href="#problem" data-scroll data-micron="slide" data-micron-fill="#0055FF">The Problem</a></li>
-        <li><a href="#services" data-scroll data-micron="slide" data-micron-fill="#0055FF">Services</a></li>
-        <li><a href="#contact" data-scroll data-micron="slide" data-micron-fill="#0055FF">Contact</a></li>
-    </ul>
-    <a href="#contact" class="nav-cta" data-scroll>Stop the Leak</a>
-    <button class="nav-burger" id="nav-burger" aria-label="Open menu" aria-expanded="false">
-        <span></span><span></span><span></span>
-    </button>
-</nav>
-
-<!-- Mobile overlay -->
-<div class="mob-overlay" id="mob-overlay" aria-hidden="true">
-    <button class="mob-close" id="mob-close" aria-label="Close menu">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <line x1="5" y1="5" x2="19" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-            <line x1="19" y1="5" x2="5" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-    </button>
-    <nav>
-        <a href="#problem" data-scroll>The Problem</a>
-        <a href="#services" data-scroll>Services</a>
-        <a href="#contact" data-scroll>Contact</a>
-        <a href="#contact" data-scroll class="mob-cta">Stop the Leak &rarr;</a>
-    </nav>
-</div>
+<body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>
 
 <!-- ═══════ 1. HERO ═══════ -->
 <section id="hero">

@@ -1,6 +1,8 @@
 import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 export default defineConfig({
+  plugins: [react()],
   publicDir: 'public',
   build: {
     outDir: 'dist',
@@ -8,10 +10,12 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks: {
-          gsap: ['gsap'],
-          swiper: ['swiper'],
+          three: ['three', '@react-three/fiber', '@react-three/drei'],
         }
       }
     }
+  },
+  optimizeDeps: {
+    exclude: ['@react-three/postprocessing'] // future-proof
   }
 });

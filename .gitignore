@@ -1,4 +1,25 @@
+# Dependencies
 node_modules/
+
+# Build outputs
 dist/
+.vercel/
+
+# IDE / OS
 .DS_Store
-public/assets/plane_opt.png
+Thumbs.db
+*.tsbuildinfo
+
+# Env
+.env
+.env.local
+.env.*.local
+
+# Old / temp (kept for reference during transition but not committed)
+# public/assets/plane_opt.png
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
