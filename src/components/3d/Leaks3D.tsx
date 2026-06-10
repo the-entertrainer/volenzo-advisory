@@ -55,9 +55,10 @@ function Conduit({ index, leakProgress = 0 }: { index: number; leakProgress?: nu
 
 interface Leaks3DProps {
   leakProgress?: [number, number, number]; // per-leak 0 (leaking) → 1 (recovered)
+  scrollProgress?: number;
 }
 
-export function Leaks3D({ leakProgress = [0.1, 0.1, 0.1] }: Leaks3DProps) {
+export function Leaks3D({ leakProgress = [0.1, 0.1, 0.1], scrollProgress: _scrollProgress = 0 }: Leaks3DProps & { scrollProgress?: number }) {
   return (
     <div style={{ width: '100%', height: 280, position: 'relative' }}>
       <Canvas

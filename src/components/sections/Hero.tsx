@@ -1,12 +1,13 @@
+import { MutableRefObject } from 'react';
 import { content } from '../../lib/content';
 import { Hero3D } from '../3d/Hero3D';
-import { useScrollProgress } from '../../hooks/useScrollProgress';
+import { ScrollProgress } from '../../hooks/useScrollProgress';
 
-export function Hero() {
-  const { hero: heroProgress, overall } = useScrollProgress();
-  // Pass the most relevant progress value (hero section or overall early scroll)
-  const scrollFor3D = Math.max(heroProgress, overall * 0.35);
+interface HeroProps {
+  progressRef?: MutableRefObject<ScrollProgress>;
+}
 
+export function Hero({ progressRef }: HeroProps) {
   return (
     <section id="hero" className="hero">
       <div className="hero-inner">
@@ -47,10 +48,9 @@ export function Hero() {
         <div className="hero-visual">
           <div className="hero-float">
             {/* 
-              Encapsulated 3D Hero Scene — scroll-synced
-              scrollFor3D drives camera, rotations, card float, and leak intensity in real time.
+              Encapsulated 3D Hero Scene — scroll-synced via progressRef (read in useFrame with zero React cost)
             */}
-            <Hero3D scrollProgress={scrollFor3D} />
+            <Hero3D progressRef={progressRef} />
           </div>
         </div>
       </div>

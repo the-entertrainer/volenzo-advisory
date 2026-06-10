@@ -71,7 +71,7 @@ interface Services3DProps {
   onNodeFocus?: (index: number) => void;
 }
 
-export function Services3D({ activeIndex = 1, onNodeFocus }: Services3DProps) {
+export function Services3D({ activeIndex = 1, onNodeFocus, scrollProgress: _scrollProgress = 0 }: Services3DProps & { scrollProgress?: number }) {
   const labels = content.services.items.map(s => s.name);
 
   return (

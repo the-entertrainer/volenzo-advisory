@@ -3,41 +3,39 @@ import { OrbitControls, Html } from '@react-three/drei';
 import { useRef } from 'react';
 import * as THREE from 'three';
 import { content } from '../../lib/content';
+import type { ScrollProgress } from '../../hooks/useScrollProgress';
 
 /**
- * HERO 3D SCENE — First encapsulated professional 3D component
- * 
- * Current (MVP): Procedural "commercial aircraft" metaphor + floating data cards.
- * Future (per OVERHAUL_PLAN):
- *   - Real .glb low-poly plane loaded via useGLTF + DRACO
- *   - Scroll-synced camera + object transforms (rotation, position, scale)
- *   - Material uniforms for "leak" shaders (red particles → blue recovered)
- *   - GSAP timeline scrubbing for complex cinematic sequences
- *   - Instanced data cards from terminalDataPool
- *   - Performance: frameloop="demand", low dpr, invalidate on scroll only
+ * HERO 3D SCENE — Encapsulated, scroll-synced cinematic experience.
  *
- * Scroll integration pattern (to be wired in next step via useScrollProgress hook):
- *   const { progress } = useScrollProgress();
- *   useFrame(() => {
- *     // camera.position.z = THREE.MathUtils.lerp(9, 4.5, progress.hero);
- *     // planeGroup.current.rotation.y = progress.hero * Math.PI * 0.6;
- *     // material.uniforms.uLeakIntensity.value = 1 - progress.problem; // example
- *   });
+ * - Procedural aircraft + floating holographic data cards (using original terminal data pool).
+ * - progressRef (from useScrollProgress) is read every frame with zero React cost.
+ * - Camera slowly dollies + plane banks as user scrolls the hero.
+ * - Cards rise, rotate and "recover" influence based on scroll.
+ *
+ * Future upgrades (see OVERHAUL_PLAN.md):
+ *   - Load real compressed .glb plane via useGLTF
+ *   - Custom shaders for flowing data leaks (red → blue recovery)
+ *   - Instanced cards + real particle systems
+ *   - GSAP timeline scrubbing for complex sequences
+ *   - frameloop="demand" + invalidate only on significant progress change
  */
 
-function ProceduralPlane({ scrollProgress = 0 }: { scrollProgress?: number }) {
+function ProceduralPlane({ progressRef }: { progressRef?: React.MutableRefObject<ScrollProgress> }) {
   const group = useRef<THREE.Group>(null!);
 
   useFrame((state) => {
     if (!group.current) return;
 
-    // Basic autonomous animation (will be replaced by scroll-driven values)
-    const t = state.clock.elapsedTime * 0.6;
-    group.current.rotation.y = t * 0.15 + scrollProgress * 1.8; // slight bank with simulated scroll
-    group.current.position.y = Math.sin(t * 0.8) * 0.15;
+    const p = progressRef?.current?.hero ?? 0;
+    const t = state.clock.elapsedTime * 0.55;
 
-    // Example of scroll influence on "leak" elements (scale a warning element)
-    // group.current.scale.setScalar(1 + scrollProgress * 0.03);
+    // Scroll-driven cinematic motion
+    group.current.rotation.y = t * 0.12 + p * 2.1;           // bank + slow spin with scroll
+    group.current.position.y = Math.sin(t * 0.7) * 0.18 + p * -0.6;
+    group.current.position.z = p * -0.8;
+
+    group.current.scale.setScalar(1 + p * 0.015);
   });
 
   return (
@@ -60,7 +58,7 @@ function ProceduralPlane({ scrollProgress = 0 }: { scrollProgress?: number }) {
         <meshPhongMaterial color="#0f172a" />
       </mesh>
 
-      {/* Winglets / engines (simple) */}
+      {/* Engines */}
       <mesh position={[-2.6, 0, -0.6]}>
         <cylinderGeometry args={[0.22, 0.22, 1.1, 6]} />
         <meshPhongMaterial color="#334155" />
@@ -76,71 +74,71 @@ function ProceduralPlane({ scrollProgress = 0 }: { scrollProgress?: number }) {
         <meshPhongMaterial color="#111a2e" />
       </mesh>
 
-      {/* Subtle "data leak" red accents (will become particle systems + shader driven) */}
+      {/* Data leak accents (will evolve into proper particles/shaders) */}
       <mesh position={[-1.8, -0.3, 0.2]}>
         <sphereGeometry args={[0.18]} />
-        <meshBasicMaterial color="#D41C2C" transparent opacity={0.7} />
+        <meshBasicMaterial color="#D41C2C" transparent opacity={0.65} />
       </mesh>
       <mesh position={[1.9, -0.25, 0.1]}>
         <sphereGeometry args={[0.15]} />
-        <meshBasicMaterial color="#D41C2C" transparent opacity={0.65} />
+        <meshBasicMaterial color="#D41C2C" transparent opacity={0.6} />
       </mesh>
     </group>
   );
 }
 
-function FloatingDataCard({ data, index, scrollProgress = 0 }: { 
+function FloatingDataCard({ data, index, progressRef }: { 
   data: (typeof content.terminalDataPool)[number]; 
   index: number; 
-  scrollProgress?: number;
+  progressRef?: React.MutableRefObject<ScrollProgress>;
 }) {
   const ref = useRef<THREE.Group>(null!);
-  const value = data.range[0] + (data.range[1] - data.range[0]) * 0.5; // static representative
+  const value = data.range[0] + (data.range[1] - data.range[0]) * 0.5;
 
   useFrame((state) => {
     if (!ref.current) return;
-    const t = state.clock.elapsedTime + index * 2;
-    // Gentle autonomous float + scroll influence (replace with real progress)
-    ref.current.position.y = Math.sin(t * 0.7) * 0.4 + scrollProgress * 1.2;
-    ref.current.rotation.y = Math.sin(t * 0.3) * 0.15 + scrollProgress * 0.8;
+    const p = progressRef?.current?.hero ?? 0;
+    const t = state.clock.elapsedTime + index * 1.7;
+
+    ref.current.position.y = Math.sin(t * 0.65) * 0.35 + p * 1.4 - index * 0.15;
+    ref.current.rotation.y = Math.sin(t * 0.28) * 0.12 + p * 1.1;
+    ref.current.position.x = ((index % 2 === 0 ? -3.6 : 3.6) + (index - 2) * 0.35) + p * (index % 2 === 0 ? 1.2 : -1.2);
   });
 
   const isDanger = data.type === 'danger';
 
   return (
     <group ref={ref} position={[
-      (index % 2 === 0 ? -3.8 : 3.8) + (index - 2) * 0.4, 
-      1.5 - index * 0.9, 
-      -1 + (index % 3) * 0.6
+      (index % 2 === 0 ? -3.6 : 3.6) + (index - 2) * 0.35, 
+      1.4 - index * 0.85, 
+      -0.8 + (index % 3) * 0.55
     ]}>
-      {/* Simple card plane (will become rounded + backface + real Text/Html) */}
       <mesh>
-        <planeGeometry args={[2.8, 1.35]} />
+        <planeGeometry args={[2.7, 1.3]} />
         <meshPhongMaterial 
           color={isDanger ? '#3a1518' : '#0f253f'} 
           side={THREE.DoubleSide} 
-          shininess={30} 
+          shininess={28} 
         />
       </mesh>
 
-      {/* Label / value as Html for crisp text (drei Html portals over WebGL) */}
-      <Html position={[0, 0.15, 0.02]} style={{ pointerEvents: 'none' }} transform>
+      <Html position={[0, 0.12, 0.02]} style={{ pointerEvents: 'none' }} transform>
         <div style={{
-          width: '260px',
+          width: '250px',
           fontFamily: 'Inter, system-ui, sans-serif',
-          fontSize: '11px',
+          fontSize: '10.5px',
           color: '#fff',
           textAlign: 'center',
-          lineHeight: 1.15,
-          opacity: 0.95,
+          lineHeight: 1.12,
+          opacity: 0.92,
         }}>
-          <div style={{ fontSize: '9px', letterSpacing: '1.5px', opacity: 0.6, marginBottom: 2 }}>
+          <div style={{ fontSize: '8.5px', letterSpacing: '1.6px', opacity: 0.55, marginBottom: 1 }}>
             {data.label}
           </div>
-          <div style={{ fontSize: '17px', fontWeight: 600, color: isDanger ? '#ff6b6b' : '#7dd3fc' }}>
+          <div style={{ fontSize: '16px', fontWeight: 600, color: isDanger ? '#ff6b6b' : '#7dd3fc' }}>
             {data.prefix}{value.toFixed(data.dec)}{data.suffix}
           </div>
-          <div style={{ fontSize: '9px', opacity: 0.55, marginTop: 2 }}>
+          <div style={{ fontSize: '8.5px', opacity: 0.5, marginTop: 1 }}>
             {data.metas[0]}
           </div>
         </div>
@@ -149,75 +147,58 @@ function FloatingDataCard({ data, index, scrollProgress = 0 }: {
   );
 }
 
-function Scene({ scrollProgress = 0 }: { scrollProgress?: number }) {
+function Scene({ progressRef }: { progressRef?: React.MutableRefObject<ScrollProgress> }) {
   const { camera } = useThree();
 
-  // Initial cinematic camera
-  camera.position.set(0, 1.2, 9.5);
-  camera.lookAt(0, 0.2, 0);
+  useFrame(() => {
+    const p = progressRef?.current?.hero ?? 0;
+    camera.position.z = 9.2 - p * 2.8;
+    camera.position.y = 1.15 + p * 0.35;
+    camera.lookAt(0, 0.1 + p * -0.4, 0);
+  });
 
   return (
     <>
-      {/* Lighting — professional, cinematic, low cost */}
-      <ambientLight intensity={0.55} />
-      <directionalLight 
-        position={[-6, 12, -4]} 
-        intensity={1.1} 
-        castShadow={false}
-      />
-      <hemisphereLight 
-        args={['#a8c9e8', '#0b1426', 0.6]} 
-      />
+      <ambientLight intensity={0.52} />
+      <directionalLight position={[-6, 12, -4]} intensity={1.15} />
+      <hemisphereLight args={['#a8c9e8', '#0b1426', 0.55]} />
 
-      {/* The aircraft */}
-      <ProceduralPlane scrollProgress={scrollProgress} />
+      <ProceduralPlane progressRef={progressRef} />
 
-      {/* Floating data cards — directly inspired by the original terminal.js POOL */}
       {content.terminalDataPool.slice(0, 6).map((entry, i) => (
         <FloatingDataCard 
           key={i} 
           data={entry} 
           index={i} 
-          scrollProgress={scrollProgress} 
+          progressRef={progressRef} 
         />
       ))}
 
-      {/* Subtle environment grid / data field (premium abstract feel) */}
-      <gridHelper 
-        args={[28, 14, '#1e3a5f', '#132a44']} 
-        position={[0, -2.6, 0]} 
-      />
+      <gridHelper args={[26, 13, '#1e3a5f', '#132a44']} position={[0, -2.5, 0]} />
 
-      {/* Dev controls — remove or conditional in prod */}
       <OrbitControls 
         enablePan={false} 
         enableZoom={true} 
-        minDistance={4} 
-        maxDistance={18}
+        minDistance={3.5} 
+        maxDistance={17}
         enableDamping 
-        dampingFactor={0.08}
+        dampingFactor={0.1}
       />
     </>
   );
 }
 
 interface Hero3DProps {
-  scrollProgress?: number; // 0–1 driven by useScrollProgress (hero or overall early)
+  progressRef?: React.MutableRefObject<ScrollProgress>;
 }
 
-export function Hero3D({ scrollProgress = 0 }: Hero3DProps) {
-  // This value now comes from the parent (scroll-synced). Perfect for driving 3D properties.
-  // Next upgrades:
-  // - GSAP timeline scrubbing inside a useGSAP hook
-  // - Per-section values (problemProgress etc.)
-  // - Switch frameloop to "demand" + manual invalidate on significant progress change for perf
-
+export function Hero3D({ progressRef }: Hero3DProps) {
   return (
     <div className="three-canvas-container" style={{ position: 'absolute', inset: 0 }}>
       <Canvas
         frameloop="always"
-        dpr={[1, 1.55]}
-        camera={{ fov: 42, near: 0.5, far: 200 }}
+        dpr={[1, 1.5]}
+        camera={{ fov: 42, near: 0.5, far: 200, position: [0, 1.15, 9.2] }}
         gl={{ 
           antialias: true, 
           alpha: true, 
@@ -226,7 +207,7 @@ export function Hero3D({ scrollProgress = 0 }: Hero3DProps) {
         }}
         style={{ background: 'transparent' }}
       >
-        <Scene scrollProgress={scrollProgress} />
+        <Scene progressRef={progressRef} />
       </Canvas>
     </div>
   );
