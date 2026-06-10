@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { gsap } from 'gsap';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface PreloaderProps {
   onComplete?: () => void;
@@ -7,47 +7,34 @@ interface PreloaderProps {
 }
 
 /**
- * Preloader matching the original Volenzo aesthetic (animated logo + sky bg).
- * Uses the original webp/gif from public/assets for brand consistency.
- * Fades out elegantly with GSAP.
+ * Preloader - grounded, elegant, using the original brand animated logo.
+ * Fluid exit powered by framer-motion.
  */
-export function Preloader({ onComplete, minDuration = 2200 }: PreloaderProps) {
+export function Preloader({ onComplete, minDuration = 2100 }: PreloaderProps) {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
     const start = Date.now();
 
     const exit = () => {
-      const loader = document.getElementById('preloader');
-      if (!loader) {
-        setVisible(false);
+      setVisible(false);
+      // Small delay so exit animation can play
+      setTimeout(() => {
         onComplete?.();
-        return;
-      }
-
-      const tl = gsap.timeline({
-        onComplete: () => {
-          setVisible(false);
-          onComplete?.();
-        },
-      });
-
-      tl.to('#preloader-logo', { scale: 1.08, duration: 0.22, ease: 'power2.out' })
-        .to('#preloader-logo', { opacity: 0, duration: 0.32, ease: 'power2.in' }, '-=0.05')
-        .to(loader, { yPercent: -100, duration: 0.6, ease: 'power3.inOut' }, '-=0.08');
+      }, 450);
     };
 
     const timer = setTimeout(() => {
       const elapsed = Date.now() - start;
       const remaining = Math.max(0, minDuration - elapsed);
       setTimeout(exit, remaining);
-    }, 120);
+    }, 80);
 
-    // Also allow early exit if user interacts (nice touch)
     const earlyExit = () => {
       clearTimeout(timer);
       exit();
     };
+
     window.addEventListener('keydown', earlyExit, { once: true });
     window.addEventListener('wheel', earlyExit, { once: true, passive: true });
 
@@ -58,33 +45,41 @@ export function Preloader({ onComplete, minDuration = 2200 }: PreloaderProps) {
     };
   }, [minDuration, onComplete]);
 
-  if (!visible) return null;
-
   return (
-    <div
-      id="preloader"
-      style={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 99999,
-        background: '#fff',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-      aria-hidden="true"
-    >
-      <picture>
-        <source srcSet="assets/volenzologoanimated.webp" type="image/webp" />
-        <img
-          id="preloader-logo"
-          src="assets/volenzologoanimated.gif"
-          alt="Volenzo Advisory"
-          width={210}
-          height={210}
-          style={{ objectFit: 'contain' }}
-        />
-      </picture>
-    </div>
+    <AnimatePresence>
+      {visible && (
+        <motion.div
+          id="preloader"
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 99999,
+            background: '#fff',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          initial={{ opacity: 1 }}
+          exit={{ y: '-100%', transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } }}
+          aria-hidden="true"
+        >
+          <motion.picture
+            initial={{ scale: 0.92, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <source srcSet="assets/volenzologoanimated.webp" type="image/webp" />
+            <img
+              id="preloader-logo"
+              src="assets/volenzologoanimated.gif"
+              alt="Volenzo Advisory"
+              width={210}
+              height={210}
+              style={{ objectFit: 'contain' }}
+            />
+          </motion.picture>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }

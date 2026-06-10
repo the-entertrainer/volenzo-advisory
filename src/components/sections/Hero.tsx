@@ -1,13 +1,7 @@
-import { MutableRefObject } from 'react';
+import { motion } from 'framer-motion';
 import { content } from '../../lib/content';
-import { Hero3D } from '../3d/Hero3D';
-import { ScrollProgress } from '../../hooks/useScrollProgress';
 
-interface HeroProps {
-  progressRef?: MutableRefObject<ScrollProgress>;
-}
-
-export function Hero({ progressRef }: HeroProps) {
+export function Hero() {
   return (
     <section id="hero" className="hero">
       <div className="hero-inner">
@@ -26,7 +20,6 @@ export function Hero({ progressRef }: HeroProps) {
           <p className="hero-sub">
             {content.hero.subPrefix}
             <span className="typed-target">losing to ADM surprises.</span>
-            {/* TODO(overhaul): Add small GSAP or React cycle for the original rotating subLines from content.hero.subLines */}
           </p>
 
           <div className="hero-actions">
@@ -44,13 +37,46 @@ export function Hero({ progressRef }: HeroProps) {
           <p className="hero-trust">{content.hero.trust}</p>
         </div>
 
-        {/* RIGHT: THE 3D SCENE — primary cinematic replacement for Atropos + terminal cards + plane */}
+        {/* RIGHT: Grounded, premium visual with super fluid framer-motion animated figures */}
         <div className="hero-visual">
           <div className="hero-float">
-            {/* 
-              Encapsulated 3D Hero Scene — scroll-synced via progressRef (read in useFrame with zero React cost)
-            */}
-            <Hero3D progressRef={progressRef} />
+            <motion.div
+              className="hero-visual-inner"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {/* Clean plane visual - grounded and professional */}
+              <img 
+                src="assets/plane.png" 
+                alt="Commercial aircraft" 
+                className="hero-plane" 
+                style={{ maxWidth: '100%', height: 'auto' }}
+              />
+
+              {/* Fluid animated figures / value tags - emphasis on recovery */}
+              <motion.div 
+                className="scene-tag scene-tag--adm"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.35, duration: 0.6, ease: 'easeOut' }}
+                whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
+              >
+                <span className="tag-label">ADM challenged</span>
+                <strong className="tag-val">+₹8.4L</strong>
+              </motion.div>
+
+              <motion.div 
+                className="scene-tag scene-tag--ndc"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5, duration: 0.6, ease: 'easeOut' }}
+                whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
+              >
+                <span className="tag-label">NDC recovered</span>
+                <strong className="tag-val">+₹6.1L</strong>
+              </motion.div>
+            </motion.div>
           </div>
         </div>
       </div>

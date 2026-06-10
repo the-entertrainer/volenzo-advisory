@@ -1,4 +1,21 @@
+import { motion } from 'framer-motion';
 import { content } from '../../lib/content';
+
+const gridVariants = {
+  hidden: {},
+  visible: {
+    transition: { staggerChildren: 0.1 },
+  },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] }
+  },
+};
 
 export function Services() {
   return (
@@ -8,21 +25,24 @@ export function Services() {
           Three fixes.<br /><em>One call.</em>
         </h2>
 
-        {/* 
-          3D SERVICES HUB INJECTION POINT (highest priority after Hero)
-          The Swiper + tilt cards below will be replaced by <Services3D /> 
-          - Central elegant 3D hub
-          - Three orbiting/focused service nodes
-          - GSAP-scrubbed camera that orbits to the active service on scroll or click
-          - Side panel (or 3D Html billboard) shows the exact original desc
-          - All copy below stays verbatim in the panel
-        */}
-
-        <div className="services-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '18px' }}>
+        <motion.div 
+          className="services-grid" 
+          style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '18px' }}
+          variants={gridVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-60px" }}
+        >
           {content.services.items.map((svc, i) => (
-            <article 
+            <motion.article 
               key={i} 
               className={`svc-card ${svc.featured ? 'svc-card--featured' : ''}`}
+              variants={cardVariants}
+              whileHover={{ 
+                y: -4, 
+                boxShadow: '0 20px 40px -15px rgba(0, 55, 180, 0.12)',
+                transition: { duration: 0.2 } 
+              }}
             >
               <div className="svc-head">
                 <span className="svc-idx">{svc.idx}</span>
@@ -54,14 +74,11 @@ export function Services() {
               <div className="svc-footer">
                 <div className="svc-bar-host"><div className="svc-bar" style={{ width: svc.featured ? '82%' : '55%' }} /></div>
               </div>
-            </article>
+            </motion.article>
           ))}
-        </div>
+        </motion.div>
 
         <p className="services-note">{content.services.note}</p>
-
-        {/* Placeholder for the real 3D component that will drive this section immersively */}
-        {/* <Services3D activeIndex={active} onFocus={(i) => ...} /> */}
       </div>
     </section>
   );

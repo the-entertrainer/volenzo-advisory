@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Lenis from 'lenis';
 import { content } from './lib/content';
 
 // Sections
@@ -12,21 +13,32 @@ import { Footer } from './components/ui/Footer';
 import { Nav } from './components/ui/Nav';
 import { Preloader } from './components/ui/Preloader';
 
-// 3D scenes (encapsulated)
-import { Leaks3D } from './components/3d/Leaks3D';
-import { Services3D } from './components/3d/Services3D';
-
-// Real scroll-synced 3D progress (Lenis + GSAP ScrollTrigger)
-import { useScrollProgress } from './hooks/useScrollProgress';
-
 function App() {
   const [showPreloader, setShowPreloader] = useState(true);
-  const [activeService, setActiveService] = useState(1);
+  const [lenis, setLenis] = useState<Lenis | null>(null);
 
-  // Master scroll progress API (ref for R3F + state for UI)
-  const { progress, progressRef, lenis } = useScrollProgress();
+  // Super fluid smooth scroll with Lenis (kept for premium grounded feel)
+  useEffect(() => {
+    const lenisInstance = new Lenis({
+      duration: 1.15,
+      easing: (t: number) => Math.min(1, 1.001 * (-Math.pow(2, -10 * t) + 1)),
+      smoothWheel: true,
+    });
 
-  // Smooth anchor scrolling powered by Lenis (much better than native)
+    setLenis(lenisInstance);
+
+    function raf(time: number) {
+      lenisInstance.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+
+    return () => {
+      lenisInstance.destroy();
+    };
+  }, []);
+
+  // Smooth anchor navigation
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       const target = (e.target as HTMLElement).closest('a[data-scroll], a[href^="#"]');
@@ -39,15 +51,9 @@ function App() {
       if (el && lenis) {
         e.preventDefault();
         lenis.scrollTo(el as HTMLElement, {
-          offset: -64,
-          duration: 1.2,
-          easing: (t: number) => 1 - Math.pow(1 - t, 3),
+          offset: -70,
+          duration: 1.1,
         });
-      } else if (el) {
-        // Fallback
-        e.preventDefault();
-        const top = (el as HTMLElement).getBoundingClientRect().top + window.scrollY - 80;
-        window.scrollTo({ top, behavior: 'smooth' });
       }
     };
 
@@ -55,27 +61,16 @@ function App() {
     return () => document.removeEventListener('click', handleClick);
   }, [lenis]);
 
-  // Dynamic leak progress driven by actual problem section scroll (0 = fully leaking, 1 = recovered)
-  const problemP = progress.problem || 0;
-  const leakProgress: [number, number, number] = [
-    Math.max(0, Math.min(1, 1 - problemP * 2.2)), // ADM
-    Math.max(0, Math.min(1, 1 - (problemP - 0.1) * 2.4)), // NDC
-    Math.max(0, Math.min(1, 1 - (problemP - 0.25) * 2.6)), // GDS
-  ];
-
-  // Services section progress can influence the constellation
-  const servicesP = progress.services || 0;
-
   return (
     <div className="volenzo-app">
       {showPreloader && (
-        <Preloader onComplete={() => setShowPreloader(false)} minDuration={2100} />
+        <Preloader onComplete={() => setShowPreloader(false)} />
       )}
 
       <Nav />
 
       <main>
-        <Hero progressRef={progressRef} />
+        <Hero />
 
         <Marquee items={content.marquee} />
 
@@ -83,21 +78,7 @@ function App() {
 
         <Problem />
 
-        {/* 3D LEAK VISUALIZATION — now truly scroll-synced with the three problem rows */}
-        <div className="container" style={{ paddingBottom: 48 }}>
-          <Leaks3D leakProgress={leakProgress} scrollProgress={problemP} />
-        </div>
-
         <Services />
-
-        {/* 3D SERVICES CONSTELLATION — scroll + click driven */}
-        <div className="container" style={{ paddingBlock: 24 }}>
-          <Services3D 
-            activeIndex={activeService} 
-            onNodeFocus={setActiveService} 
-            scrollProgress={servicesP}
-          />
-        </div>
 
         <Contact />
       </main>

@@ -1,4 +1,23 @@
+import { motion } from 'framer-motion';
 import { content } from '../../lib/content';
+
+const containerVariants = {
+  hidden: {},
+  visible: {
+    transition: {
+      staggerChildren: 0.12,
+    },
+  },
+};
+
+const rowVariants = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { 
+    opacity: 1, 
+    y: 0,
+    transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
+  },
+};
 
 export function Problem() {
   return (
@@ -8,9 +27,16 @@ export function Problem() {
           Three leaks.<br /><em>One bleeding agency.</em>
         </h2>
 
-        <div className="problem-rows" id="problem-rows">
+        <motion.div 
+          className="problem-rows" 
+          id="problem-rows"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-80px" }}
+        >
           {content.problem.leaks.map((leak, index) => (
-            <div key={index}>
+            <motion.div key={index} variants={rowVariants}>
               <div className="problem-row">
                 <span className="row-idx" aria-hidden="true">{leak.idx}</span>
                 <div className="row-body">
@@ -18,7 +44,13 @@ export function Problem() {
                   <p className="row-desc">{leak.desc}</p>
                 </div>
                 <div className="row-loss">
-                  <span className="loss-amt">{leak.loss}</span>
+                  <motion.span 
+                    className="loss-amt"
+                    whileInView={{ scale: [0.96, 1.02, 1] }}
+                    transition={{ duration: 0.6, ease: 'easeOut' }}
+                  >
+                    {leak.loss}
+                  </motion.span>
                   <span className="loss-word">{leak.lossWord}</span>
                 </div>
               </div>
@@ -33,15 +65,9 @@ export function Problem() {
                   <path d="M0,1 L1200,1" stroke="rgba(0,55,180,0.12)" strokeWidth="1" fill="none" />
                 </svg>
               )}
-
-              {/* 
-                3D INJECTION POINT (per OVERHAUL_PLAN)
-                When Leaks3D is ready, place a synced 3D conduit visualization here or as a sticky companion.
-                Scroll depth through each .problem-row will drive particle emission, color lerp, valve state, and camera focus on the corresponding 3D leak.
-              */}
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
