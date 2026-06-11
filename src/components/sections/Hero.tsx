@@ -1,7 +1,41 @@
-import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { content } from '../../lib/content';
 
 export function Hero() {
+  // Fluid cycling subheadline — better than original Typed.js (smooth, no extra deps)
+  const [subIndex, setSubIndex] = useState(0);
+  const subLines = content.hero.subLines || ["losing to ADM surprises."];
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setSubIndex((prev) => (prev + 1) % subLines.length);
+    }, 2600);
+    return () => clearInterval(interval);
+  }, [subLines.length]);
+
+  // Grounded mouse-driven tilt for the visual (premium interactive figure without 3D libs)
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const rotateX = useTransform(mouseY, [-0.5, 0.5], [8, -8]);
+  const rotateY = useTransform(mouseX, [-0.5, 0.5], [-10, 10]);
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+
+  // Small grounded "data insights" figures from original terminal concept (fluid, not 3D)
+  const insightData = content.terminalDataPool.slice(0, 3);
+
   return (
     <section id="hero" className="hero">
       <div className="hero-inner">
@@ -19,7 +53,16 @@ export function Hero() {
 
           <p className="hero-sub">
             {content.hero.subPrefix}
-            <span className="typed-target">losing to ADM surprises.</span>
+            <motion.span 
+              key={subIndex} 
+              className="typed-target"
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.35, ease: 'easeOut' }}
+            >
+              {subLines[subIndex]}
+            </motion.span>
           </p>
 
           <div className="hero-actions">
@@ -37,30 +80,38 @@ export function Hero() {
           <p className="hero-trust">{content.hero.trust}</p>
         </div>
 
-        {/* RIGHT: Grounded, premium visual with super fluid framer-motion animated figures */}
+        {/* RIGHT: Grounded premium visual — retains original plane + floating recovery figures + data insight concept */}
         <div className="hero-visual">
-          <div className="hero-float">
+          <div 
+            className="hero-float"
+            onMouseMove={handleMouseMove}
+            onMouseLeave={handleMouseLeave}
+          >
             <motion.div
               className="hero-visual-inner"
-              initial={{ opacity: 0, y: 30 }}
+              style={{ 
+                rotateX, 
+                rotateY,
+                transformStyle: 'preserve-3d' as any 
+              }}
+              initial={{ opacity: 0, y: 25 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
             >
-              {/* Clean plane visual - grounded and professional */}
+              {/* Main plane figure - clean and professional */}
               <img 
                 src="assets/plane.png" 
                 alt="Commercial aircraft" 
                 className="hero-plane" 
-                style={{ maxWidth: '100%', height: 'auto' }}
               />
 
-              {/* Fluid animated figures / value tags - emphasis on recovery */}
+              {/* Key animated recovery figures (original concept, now with fluid framer emphasis) */}
               <motion.div 
                 className="scene-tag scene-tag--adm"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.35, duration: 0.6, ease: 'easeOut' }}
-                whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
+                initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+                whileHover={{ scale: 1.04, y: -2 }}
               >
                 <span className="tag-label">ADM challenged</span>
                 <strong className="tag-val">+₹8.4L</strong>
@@ -68,14 +119,34 @@ export function Hero() {
 
               <motion.div 
                 className="scene-tag scene-tag--ndc"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5, duration: 0.6, ease: 'easeOut' }}
-                whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
+                initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                transition={{ delay: 0.55, duration: 0.5 }}
+                whileHover={{ scale: 1.04, y: -2 }}
               >
                 <span className="tag-label">NDC recovered</span>
                 <strong className="tag-val">+₹6.1L</strong>
               </motion.div>
+
+              {/* Grounded data insights — retains original "terminal" / insider data concept with super fluid figures */}
+              <div className="hero-insights">
+                {insightData.map((item, idx) => {
+                  const val = Math.round(item.range[0] + (item.range[1] - item.range[0]) * 0.6);
+                  return (
+                    <motion.div 
+                      key={idx}
+                      className="insight-pill"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 0.85, y: 0 }}
+                      transition={{ delay: 0.7 + idx * 0.08 }}
+                      whileHover={{ opacity: 1, scale: 1.02, transition: { duration: 0.15 } }}
+                    >
+                      <span className="insight-label">{item.label}</span>
+                      <strong className="insight-val">{item.prefix}{val}{item.suffix}</strong>
+                    </motion.div>
+                  );
+                })}
+              </div>
             </motion.div>
           </div>
         </div>
