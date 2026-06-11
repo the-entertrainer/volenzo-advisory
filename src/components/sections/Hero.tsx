@@ -33,9 +33,6 @@ export function Hero() {
     mouseY.set(0);
   };
 
-  // Small grounded "data insights" figures from original terminal concept (fluid, not 3D)
-  const insightData = content.terminalDataPool.slice(0, 3);
-
   return (
     <section id="hero" className="hero">
       <div className="hero-inner">
@@ -127,26 +124,6 @@ export function Hero() {
                 <span className="tag-label">NDC recovered</span>
                 <strong className="tag-val">+₹6.1L</strong>
               </motion.div>
-
-              {/* Grounded data insights — retains original "terminal" / insider data concept with super fluid figures */}
-              <div className="hero-insights">
-                {insightData.map((item, idx) => {
-                  const val = Math.round(item.range[0] + (item.range[1] - item.range[0]) * 0.6);
-                  return (
-                    <motion.div 
-                      key={idx}
-                      className="insight-pill"
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 0.85, y: 0 }}
-                      transition={{ delay: 0.7 + idx * 0.08 }}
-                      whileHover={{ opacity: 1, scale: 1.02, transition: { duration: 0.15 } }}
-                    >
-                      <span className="insight-label">{item.label}</span>
-                      <strong className="insight-val">{item.prefix}{val}{item.suffix}</strong>
-                    </motion.div>
-                  );
-                })}
-              </div>
             </motion.div>
           </div>
         </div>
